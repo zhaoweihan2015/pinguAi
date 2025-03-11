@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "highlight.js/styles/androidstudio.css";
 
 :root {
   --background: #ffffff;
@@ -23,4 +24,21 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+pre {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  background-color: #2d2d31;
+  white-space: pre-wrap;
+  color: #fff;
+}
+
+code {
+  
+}
+
+.ant-bubble-content p {
+  padding: 5px 0;
 }
