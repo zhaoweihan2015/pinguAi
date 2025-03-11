@@ -213,8 +213,7 @@ const Independent: React.FC = () => {
           role: "user",
           content: message.content,
           messageRender: (content) => {
-            // return <ChatMarkDown>{content}</ChatMarkDown>;
-            return <div>{content}</div>;
+            return <ChatMarkDown>{content}</ChatMarkDown>;
           },
         };
       } else if (message.role === "assistant") {
