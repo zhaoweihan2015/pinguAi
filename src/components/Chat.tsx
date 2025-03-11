@@ -1,30 +1,20 @@
 "use client";
 
-import { Bubble, Conversations, Prompts, Sender, Welcome } from "@ant-design/x";
+import { Bubble, Conversations, Sender } from "@ant-design/x";
 import { createStyles } from "antd-style";
 import React, { useEffect, useMemo, useRef } from "react";
-
+import Image from 'next/image'
 import {
-  CommentOutlined,
-  EllipsisOutlined,
-  FireOutlined,
-  HeartOutlined,
+  CopyOutlined,
   PlusOutlined,
-  ReadOutlined,
-  ShareAltOutlined,
-  SmileOutlined,
+  SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, type GetProp, Space } from "antd";
+import { Button, type GetProp, Space, Typography } from "antd";
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
-
-const renderTitle = (icon: React.ReactElement, title: string) => (
-  <Space align="start">
-    {icon}
-    <span>{title}</span>
-  </Space>
-);
+import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
+import { UIMessage } from "ai";
 
 const defaultConversationsItems = [
   {
@@ -123,60 +113,10 @@ const useStyle = createStyles(({ token, css }) => {
   };
 });
 
-const placeholderPromptsItems: GetProp<typeof Prompts, "items"> = [
-  {
-    key: "1",
-    label: renderTitle(
-      <FireOutlined style={{ color: "#FF4D4F" }} />,
-      "Hot Topics"
-    ),
-    description: "What are you interested in?",
-    children: [
-      {
-        key: "1-1",
-        description: `What's new in X?`,
-      },
-      {
-        key: "1-2",
-        description: `What's AGI?`,
-      },
-      {
-        key: "1-3",
-        description: `Where is the doc?`,
-      },
-    ],
-  },
-  {
-    key: "2",
-    label: renderTitle(
-      <ReadOutlined style={{ color: "#1890FF" }} />,
-      "Design Guide"
-    ),
-    description: "How to design a good product?",
-    children: [
-      {
-        key: "2-1",
-        icon: <HeartOutlined />,
-        description: `Know the well`,
-      },
-      {
-        key: "2-2",
-        icon: <SmileOutlined />,
-        description: `Set the AI role`,
-      },
-      {
-        key: "2-3",
-        icon: <CommentOutlined />,
-        description: `Express the feeling`,
-      },
-    ],
-  },
-];
-
 const roles: GetProp<typeof Bubble.List, "roles"> = {
   ai: {
     placement: "start",
-    avatar: { icon: <UserOutlined />, style: { background: "#fde3cf" } },
+    avatar: { icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />, style: { background: "#fde3cf" } },
     typing: { step: 5, interval: 20 },
     style: {
       maxWidth: "90%",
@@ -202,7 +142,7 @@ const Independent: React.FC = () => {
   );
 
   // ==================== Runtime ====================
-  const { messages, input, setInput, append, status, stop } = useChat();
+  const { messages, input, reload, setMessages, setInput, append, status, stop } = useChat();
 
   // ==================== Event ====================
   const onSubmit = (nextContent: string) => {
@@ -215,10 +155,6 @@ const Independent: React.FC = () => {
     () => status === "submitted" || status === "streaming",
     [status]
   );
-
-  const onPromptsItemClick: GetProp<typeof Prompts, "onItemClick"> = (info) => {
-    append({ role: "user", content: info.data.description as string });
-  };
 
   const onAddConversation = () => {
     setConversationsItems([
@@ -246,41 +182,31 @@ const Independent: React.FC = () => {
     }
   }, [lastMessage?.reasoning, lastMessage?.content]);
 
+  const clean = () => {
+    stop();
+    setMessages([]);
+    setInput("");
+  };
+
+  const copy = (message: string) => {
+    navigator.clipboard.writeText(message);
+  }
+
+  const reloadMessage = (message: UIMessage) => {
+    reload(message);
+  }
+
   // ==================== Nodes ====================
   const chatRef = useRef<HTMLDivElement>(null);
 
   const placeholderNode = (
     <Space direction="vertical" size={16} className={styles.placeholder}>
-      <Welcome
-        variant="borderless"
-        icon="https://mdn.alipayobjects.com/huamei_iwk9zp/afts/img/A*s5sNRo5LjfQAAAAAAAAAAAAADgCCAQ/fmt.webp"
-        title="Hello, I'm Ant Design X"
-        description="Base on Ant Design, AGI product interface solution, create a better intelligent vision~"
-        extra={
-          <Space>
-            <Button icon={<ShareAltOutlined />} />
-            <Button icon={<EllipsisOutlined />} />
-          </Space>
-        }
-      />
-      <Prompts
-        title="Do you want?"
-        items={placeholderPromptsItems}
-        styles={{
-          list: {
-            width: "100%",
-          },
-          item: {
-            flex: 1,
-          },
-        }}
-        onItemClick={onPromptsItemClick}
-      />
+      开始对话
     </Space>
   );
 
   const items: GetProp<typeof Bubble.List, "items"> = useMemo(() => {
-    return messages.map((message) => {
+    return messages.map((message, index) => {
       if (message.role === "user") {
         return {
           key: message.id,
@@ -292,23 +218,31 @@ const Independent: React.FC = () => {
           },
         };
       } else if (message.role === "assistant") {
-        return {
+        const set: BubbleDataType = {
           key: message.id,
           role: "ai",
           content: message.content,
-          messageRender: (content) => {
+          messageRender: (content?: string) => {
             return (
               <div>
                 <div className={styles.reasoning}>
                   <ChatMarkDown>{message.reasoning}</ChatMarkDown>
-                  {/* <div>{message.reasoning}</div> */}
                 </div>
                 <ChatMarkDown>{content}</ChatMarkDown>
-                {/* <div>{content}</div> */}
               </div>
             );
           },
-        };
+        }
+
+        if(index === messages.length - 1) {
+          set.footer = (
+            <Space>
+              <Button color="default" variant="text" size="small" icon={<SyncOutlined />} onClick={() => reloadMessage(message)} />
+              <Button color="default" variant="text" size="small" icon={<CopyOutlined />} onClick={() => copy(message.content)} />
+            </Space>
+          )
+        }
+        return set;
       } else {
         return {};
       }
@@ -355,7 +289,23 @@ const Independent: React.FC = () => {
           onChange={setInput}
           loading={loading}
           className={styles.sender}
-          onCancel={stop}
+          actions={(_, info) => {
+            const { SendButton, LoadingButton, ClearButton } = info.components;
+    
+            return (
+              <Space size="small">
+                <Typography.Text type="secondary">
+                  <small>清除对话</small>
+                </Typography.Text>
+                <ClearButton onClick={clean} disabled={false} />
+                {loading ? (
+                  <LoadingButton type="default" onClick={stop} disabled={false} />
+                ) : (
+                  <SendButton type="primary" disabled={false} />
+                )}
+              </Space>
+            );
+          }}
         />
       </div>
     </div>

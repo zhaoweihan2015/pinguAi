@@ -35,10 +35,14 @@ pre {
   color: #fff;
 }
 
-code {
-  
-}
-
 .ant-bubble-content p {
   padding: 5px 0;
+}
+
+.ant-space-item {
+  height: 32px;
+}
+
+.ant-space-item {
+  line-height: 30px;
 }
