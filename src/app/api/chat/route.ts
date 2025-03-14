@@ -1,21 +1,22 @@
 // import { deepseek } from "@ai-sdk/deepseek";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, createDataStreamResponse } from "ai";
-import memory from "./memory";
-import { getTimes } from "./tools";
-export const runtime = "edge";
+import db from "@/db/db";
+
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages, system } = await req.json();
   console.log(messages[messages.length - 1]);
 
+  const prompt = db.data.prompts
+
   // 赋予性格和长期记忆
   const _meessages = [
-    ...memory.map((item) => ({
+    {
       role: "system",
-      content: item,
-    })),
+      content: prompt,
+    },
     ...messages,
   ];
 

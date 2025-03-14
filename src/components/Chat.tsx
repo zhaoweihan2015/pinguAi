@@ -1,12 +1,12 @@
 "use client";
 
 import { Bubble, Conversations, Sender } from "@ant-design/x";
-import { createStyles } from "antd-style";
 import React, { useEffect, useMemo, useRef } from "react";
 import Image from 'next/image'
 import {
   CopyOutlined,
   PlusOutlined,
+  SmileFilled,
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -15,6 +15,8 @@ import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
 import { UIMessage } from "ai";
+import PlaceHolderNode from "./PlaceHolderNode";
+import ConfigModal from "./ConfigModal";
 
 const defaultConversationsItems = [
   {
@@ -22,96 +24,6 @@ const defaultConversationsItems = [
     label: "What is Ant Design X?",
   },
 ];
-
-const useStyle = createStyles(({ token, css }) => {
-  return {
-    layout: css`
-      width: 100%;
-      min-width: 1000px;
-      height: calc(100vh - 16px);
-      border-radius: ${token.borderRadius}px;
-      display: flex;
-      background: ${token.colorBgContainer};
-      font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
-
-      .ant-prompts {
-        color: ${token.colorText};
-      }
-    `,
-    menu: css`
-      background: ${token.colorBgLayout}80;
-      width: 280px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    `,
-    conversations: css`
-      padding: 0 12px;
-      flex: 1;
-      overflow-y: auto;
-    `,
-    chat: css`
-      height: 100%;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      padding: ${token.paddingLG}px;
-      gap: 16px;
-    `,
-    messages: css`
-      flex: 1;
-    `,
-    placeholder: css`
-      padding-top: 32px;
-    `,
-    sender: css`
-      box-shadow: ${token.boxShadow};
-    `,
-    logo: css`
-      display: flex;
-      height: 72px;
-      align-items: center;
-      justify-content: start;
-      padding: 0 24px;
-      box-sizing: border-box;
-
-      img {
-        width: 24px;
-        height: 24px;
-        display: inline-block;
-      }
-
-      span {
-        display: inline-block;
-        margin: 0 8px;
-        font-weight: bold;
-        color: ${token.colorText};
-        font-size: 16px;
-      }
-    `,
-    addBtn: css`
-      background: #1677ff0f;
-      border: 1px solid #1677ff34;
-      width: calc(100% - 24px);
-      margin: 0 12px 24px 12px;
-    `,
-    reasoning: css`
-      font-size: 12px;
-      color: #999;
-      padding-left: 10px;
-      padding-right: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      background-color: #f7f7f7;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    `,
-  };
-});
 
 const roles: GetProp<typeof Bubble.List, "roles"> = {
   ai: {
@@ -129,9 +41,6 @@ const roles: GetProp<typeof Bubble.List, "roles"> = {
 };
 
 const Independent: React.FC = () => {
-  // ==================== Style ====================
-  const { styles } = useStyle();
-
   // ==================== State ====================
   const [conversationsItems, setConversationsItems] = React.useState(
     defaultConversationsItems
@@ -141,12 +50,15 @@ const Independent: React.FC = () => {
     defaultConversationsItems[0].key
   );
 
+  const [open, setOpen] = React.useState(false);
+
   // ==================== Runtime ====================
   const { messages, input, reload, setMessages, setInput, append, status, stop } = useChat();
 
   // ==================== Event ====================
   const onSubmit = (nextContent: string) => {
     if (!nextContent) return;
+    // 向ai提交
     append({ role: "user", content: nextContent });
     setInput("");
   };
@@ -199,12 +111,6 @@ const Independent: React.FC = () => {
   // ==================== Nodes ====================
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const placeholderNode = (
-    <Space direction="vertical" size={16} className={styles.placeholder}>
-      开始对话
-    </Space>
-  );
-
   const items: GetProp<typeof Bubble.List, "items"> = useMemo(() => {
     return messages.map((message, index) => {
       if (message.role === "user") {
@@ -224,7 +130,7 @@ const Independent: React.FC = () => {
           messageRender: (content?: string) => {
             return (
               <div>
-                <div className={styles.reasoning}>
+                <div className="reasoning">
                   <ChatMarkDown>{message.reasoning}</ChatMarkDown>
                 </div>
                 <ChatMarkDown>{content}</ChatMarkDown>
@@ -251,13 +157,14 @@ const Independent: React.FC = () => {
 
   // ==================== Render =================
   return (
-    <div className={styles.layout}>
-      <div className={styles.menu}>
+    <div className="layout">
+      <ConfigModal open={open} onCancel={() => setOpen(false)} />
+      <div className="menu">
         {/* 🌟 添加会话 */}
         <Button
           onClick={onAddConversation}
-          type="link"
-          className={styles.addBtn}
+          type="primary"
+          className="addBtn"
           icon={<PlusOutlined />}
         >
           New Conversation
@@ -265,21 +172,24 @@ const Independent: React.FC = () => {
         {/* 🌟 会话管理 */}
         <Conversations
           items={conversationsItems}
-          className={styles.conversations}
+          className="conversations"
           activeKey={activeKey}
           onActiveChange={onConversationClick}
         />
+        <Button type="primary" shape="circle" className="configBtn" onClick={() => setOpen(true)}>
+          <SmileFilled />
+        </Button>
       </div>
-      <div className={styles.chat} ref={chatRef}>
+      <div className="chat" ref={chatRef}>
         {/* 🌟 消息列表 */}
         <Bubble.List
           items={
             items.length > 0
               ? items
-              : [{ content: placeholderNode, variant: "borderless" }]
+              : [{ content: <PlaceHolderNode />, variant: "borderless" }]
           }
           roles={roles}
-          className={styles.messages}
+          className="messages"
         />
         {/* 🌟 输入框 */}
         <Sender
@@ -287,7 +197,7 @@ const Independent: React.FC = () => {
           onSubmit={onSubmit}
           onChange={setInput}
           loading={loading}
-          className={styles.sender}
+          className="sender"
           actions={(_, info) => {
             const { SendButton, LoadingButton, ClearButton } = info.components;
     

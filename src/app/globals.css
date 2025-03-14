@@ -46,3 +46,115 @@ pre {
 .ant-space-item {
   line-height: 30px;
 }
+
+.ant-bubble-avatar {
+  position: sticky;
+  top: 0;
+}
+
+
+.layout {
+  width: 100%;
+  min-width: 1000px;
+  height: 100vh;
+  border-radius: 10px;
+  display: flex;
+  background: #f5f5f5;
+  font-family: AlibabaPuHuiTi, sans-serif;
+
+  .ant-prompts {
+    color: #000;
+  }
+}
+
+.menu {
+  position: relative;
+  background: #eeeeeecb;
+  width: 280px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.conversations {
+  padding: 0 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat {
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.messages {
+  flex: 1;
+}
+
+.sender {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  height: 72px;
+  align-items: center;
+  justify-content: start;
+  padding: 0 24px;
+  box-sizing: border-box;
+
+  img {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+  }
+
+  span {
+    display: inline-block;
+    margin: 0 8px;
+    font-weight: bold;
+    color: #000;
+    font-size: 16px;
+  }
+}
+
+.addBtn {
+  background: #1677ff0f;
+  border: 1px solid #1677ff34;
+  width: calc(100% - 24px);
+  margin: 0 12px 24px 12px;
+}
+
+.reasoning {
+  font-size: 12px;
+  color: #999;
+  padding-left: 10px;
+  padding-right: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.placeholder {
+  padding-top: 32px;
+}
+
+.configBtn {
+  position: absolute !important;
+  right: 10px;
+  bottom: 10px;
+  width: 40px;
+  height: 40px !important;
+  font-size: 28px !important;
+}
