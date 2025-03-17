@@ -46,3 +46,17 @@ export async function POST (req: Request) {
         message: "success"
     }));
 }
+
+export async function DELETE(req: Request) {
+    const { key } = await req.json();
+
+    const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
+    
+    delete conversation[key];
+
+    db.write();
+
+    return new Response(JSON.stringify({
+        message: "success"
+    }));
+}   

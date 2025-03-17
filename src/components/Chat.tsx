@@ -1,16 +1,18 @@
 "use client";
 
-import { Bubble, Conversations, Sender } from "@ant-design/x";
+import { Bubble, Conversations, ConversationsProps, Sender } from "@ant-design/x";
 import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
+  ClearOutlined,
   CopyOutlined,
+  DeleteOutlined,
   PlusOutlined,
   SmileFilled,
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, type GetProp, Space, Typography } from "antd";
+import { Button, type GetProp, Space, Typography, App } from "antd";
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
@@ -45,6 +47,8 @@ const roles: GetProp<typeof Bubble.List, "roles"> = {
 };
 
 const Independent: React.FC = () => {
+  const { message } = App.useApp();
+
   // ==================== Runtime ====================
   const {
     messages,
@@ -108,7 +112,7 @@ const Independent: React.FC = () => {
   ) => {
     const id = create ? new Date().getTime().toString() : activeKey;
 
-    const name = messages[0].content.slice(0, 10);
+    const name = messages[0]?.content.slice(0, 10) ?? "New Conversation";
 
     try {
       await fetch("/api/conversation", {
@@ -120,19 +124,40 @@ const Independent: React.FC = () => {
         }),
       });
 
+      const _conversationsItems = [...conversationsItems];
+
+      const nowItem = _conversationsItems.find((item) => item.key === id);
+
       if (create) {
-        setConversationsItems([
-          ...conversationsItems,
-          {
-            key: id,
-            label: name,
-          },
-        ]);
+        _conversationsItems.push({
+          key: id,
+          label: name,
+          messages: JSON.stringify(messages),
+        });
+      } else if(nowItem) {
+        nowItem.messages = JSON.stringify(messages);
       }
 
-      setActiveKey(id);
+      setConversationsItems(_conversationsItems);
 
-      getConversation();
+      setActiveKey(id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (key: string) => {
+    try {
+      await fetch("/api/conversation", {
+        method: "DELETE",
+        body: JSON.stringify({ key }),
+      });
+
+      setActiveKey("");
+      setMessages([]);
+      setInput("");
+
+      message.success("删除成功");
     } catch (error) {
       console.error(error);
     }
@@ -162,6 +187,9 @@ const Independent: React.FC = () => {
   }, []);
 
   const clean = () => {
+    if(!activeKey) return;
+
+    handleConversation([]);
     stop();
     setMessages([]);
     setInput("");
@@ -177,6 +205,22 @@ const Independent: React.FC = () => {
 
   // ==================== Nodes ====================
   const chatRef = useRef<HTMLDivElement>(null);
+
+  const menuConfig: ConversationsProps['menu'] = (conversation) => ({
+    items: [
+      {
+        label: '删除',
+        key: 'delete',
+        icon: <DeleteOutlined />,
+        danger: true,
+      },
+    ],
+    onClick: (menuInfo) => {
+      if(menuInfo.key === 'delete') {
+        handleDelete(conversation.key);
+      }
+    },
+  });
 
   const items: GetProp<typeof Bubble.List, "items"> = useMemo(() => {
     return messages.map((message, index) => {
@@ -253,6 +297,7 @@ const Independent: React.FC = () => {
           items={conversationsItems}
           className="conversations"
           activeKey={activeKey}
+          menu={menuConfig}
           onActiveChange={onConversationClick}
         />
         <Button
@@ -283,14 +328,14 @@ const Independent: React.FC = () => {
           loading={loading}
           className="sender"
           actions={(_, info) => {
-            const { SendButton, LoadingButton, ClearButton } = info.components;
+            const { SendButton, LoadingButton } = info.components;
 
             return (
               <Space size="small">
                 <Typography.Text type="secondary">
                   <small>清除对话</small>
                 </Typography.Text>
-                <ClearButton onClick={clean} disabled={false} />
+                <Button type="text" icon={<ClearOutlined />} onClick={clean} />
                 {loading ? (
                   <LoadingButton
                     type="default"
