@@ -89,6 +89,10 @@ const Independent: React.FC = () => {
       role: "user",
       id: `user-${new Date().getTime().toString()}`,
       content: nextContent,
+    },{
+      body: {
+        network: "0"
+      }
     });
     // 清空输入框
     setInput("");

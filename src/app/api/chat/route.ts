@@ -6,8 +6,8 @@ import db from "@/db/db";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, system } = await req.json();
-  console.log(messages[messages.length - 1]);
+  const { messages, system, network } = await req.json();
+  console.log(messages[messages.length - 1], network);
 
   const prompt = db.data.prompts
 
@@ -20,17 +20,23 @@ export async function POST(req: Request) {
     ...messages,
   ];
 
+  const isNetwork = network === "1";
+
+  const baseURL = (isNetwork ? process.env.DEEPSEEK_BOT_API_URL : process.env.DEEPSEEK_API_URL) ?? "";
+
+  const model = (isNetwork ? process.env.DEEPSEEK_BOT_API_KEY : "deepseek-r1-250120") ?? "";
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
         model: createOpenAICompatible({
-          baseURL: process.env.DEEPSEEK_API_URL ?? "",
+          baseURL,
           apiKey: process.env.DEEPSEEK_API_KEY,
           name: "deepseek",
           queryParams: {
             maxTokens: "2000",
           },
-        }).chatModel("deepseek-r1-250120"),
+        }).chatModel(model),
         messages: _meessages,
         system: system ?? "",
       });
