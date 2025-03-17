@@ -1,4 +1,4 @@
-import { App, Form, Input, Modal, Select } from "antd";
+import { App, Form, Input, Modal, Select, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { UserOutlined } from "@ant-design/icons";
 
@@ -32,11 +32,18 @@ export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
   useEffect(() => {
     if (open) {
       (async () => {
-        const prompt = await fetch("/api/prompt").then((res) => res.json());
+        setLoading(true);
+        try {
+          const prompt = await fetch("/api/prompt").then((res) => res.json());
 
-        form.setFieldsValue({
-          prompt: prompt.prompts,
-        });
+          form.setFieldsValue({
+            prompt: prompt.prompts,
+          });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,23 +62,25 @@ export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
         </span>
       }
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          model: "deepseek",
-          prompt: "",
-        }}
-      >
-        <Form.Item label="模型" name="model">
-          <Select>
-            <Select.Option value="deepseek">DeepSeek</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="Prompt" name="prompt">
-          <Input.TextArea rows={8} autoSize={{ minRows: 8, maxRows: 8 }} />
-        </Form.Item>
-      </Form>
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            model: "deepseek",
+            prompt: "",
+          }}
+        >
+          <Form.Item label="模型" name="model">
+            <Select>
+              <Select.Option value="deepseek">DeepSeek</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Prompt" name="prompt">
+            <Input.TextArea rows={8} autoSize={{ minRows: 8, maxRows: 8 }} />
+          </Form.Item>
+        </Form>
+      </Spin>
     </Modal>
   );
 }
