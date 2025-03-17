@@ -157,6 +157,8 @@ const Independent: React.FC = () => {
       setMessages([]);
       setInput("");
 
+      getConversation();
+
       message.success("删除成功");
     } catch (error) {
       console.error(error);
@@ -290,7 +292,7 @@ const Independent: React.FC = () => {
           className="addBtn"
           icon={<PlusOutlined />}
         >
-          New Conversation
+          添加对话
         </Button>
         {/* 🌟 会话管理 */}
         <Conversations
