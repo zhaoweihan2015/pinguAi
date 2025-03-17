@@ -2,7 +2,7 @@
 
 import { Bubble, Conversations, Sender } from "@ant-design/x";
 import React, { useEffect, useMemo, useRef } from "react";
-import Image from 'next/image'
+import Image from "next/image";
 import {
   CopyOutlined,
   PlusOutlined,
@@ -18,17 +18,21 @@ import { UIMessage } from "ai";
 import PlaceHolderNode from "./PlaceHolderNode";
 import ConfigModal from "./ConfigModal";
 
-const defaultConversationsItems = [
-  {
-    key: "0",
-    label: "What is Ant Design X?",
-  },
-];
+interface ConversationType {
+  key: string;
+  name: string;
+  messages: string;
+  createTime?: string;
+  updateTime?: string;
+}
 
 const roles: GetProp<typeof Bubble.List, "roles"> = {
   ai: {
     placement: "start",
-    avatar: { icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />, style: { background: "#fde3cf" } },
+    avatar: {
+      icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />,
+      style: { background: "#fde3cf" },
+    },
     typing: { step: 5, interval: 20 },
     style: {
       maxWidth: "90%",
@@ -41,58 +45,121 @@ const roles: GetProp<typeof Bubble.List, "roles"> = {
 };
 
 const Independent: React.FC = () => {
+  // ==================== Runtime ====================
+  const {
+    messages,
+    input,
+    reload,
+    setMessages,
+    setInput,
+    append,
+    status,
+    stop,
+  } = useChat();
   // ==================== State ====================
-  const [conversationsItems, setConversationsItems] = React.useState(
-    defaultConversationsItems
-  );
+  const [conversationsItems, setConversationsItems] = React.useState<
+    GetProp<typeof Conversations, "items">
+  >([]);
 
-  const [activeKey, setActiveKey] = React.useState(
-    defaultConversationsItems[0].key
-  );
+  const [activeKey, setActiveKey] =
+    React.useState<GetProp<typeof Conversations, "activeKey">>("");
 
   const [open, setOpen] = React.useState(false);
-
-  // ==================== Runtime ====================
-  const { messages, input, reload, setMessages, setInput, append, status, stop } = useChat();
-
-  // ==================== Event ====================
-  const onSubmit = (nextContent: string) => {
-    if (!nextContent) return;
-    // 向ai提交
-    append({ role: "user", content: nextContent });
-    setInput("");
-  };
 
   const loading = useMemo(
     () => status === "submitted" || status === "streaming",
     [status]
   );
+  // ==================== Event ====================
+  useEffect(() => {
+    if (status === "ready" && messages.length > 0) {
+      handleConversation(messages, !activeKey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
-  const onAddConversation = () => {
-    setConversationsItems([
-      ...conversationsItems,
-      {
-        key: `${conversationsItems.length}`,
-        label: `New Conversation ${conversationsItems.length}`,
-      },
-    ]);
-    setActiveKey(`${conversationsItems.length}`);
+  const onSubmit = (nextContent: string) => {
+    if (!nextContent) return;
+    // 向ai提交
+    append({
+      role: "user",
+      id: `user-${new Date().getTime().toString()}`,
+      content: nextContent,
+    });
+    // 清空输入框
+    setInput("");
+  };
+
+  const getConversation = async () => {
+    const res = await fetch("/api/conversation");
+    const data: Record<string, ConversationType> = await res.json();
+    setConversationsItems(
+      Object.values(data).map((item: ConversationType) => ({
+        key: item.key,
+        label: item.name,
+        messages: item.messages,
+      }))
+    );
+  };
+
+  const handleConversation = async (
+    messages: UIMessage[] = [],
+    create = false
+  ) => {
+    const id = create ? new Date().getTime().toString() : activeKey;
+
+    const name = messages[0].content.slice(0, 10);
+
+    try {
+      await fetch("/api/conversation", {
+        method: "POST",
+        body: JSON.stringify({
+          key: id,
+          name,
+          messages: JSON.stringify(messages),
+        }),
+      });
+
+      if (create) {
+        setConversationsItems([
+          ...conversationsItems,
+          {
+            key: id,
+            label: name,
+          },
+        ]);
+      }
+
+      setActiveKey(id);
+
+      getConversation();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const onConversationClick: GetProp<typeof Conversations, "onActiveChange"> = (
     key
   ) => {
     setActiveKey(key);
-  };
 
-  const lastMessage = messages[messages.length - 1];
+    setMessages(
+      JSON.parse(
+        conversationsItems.find((item) => item.key === key)?.messages ?? "[]"
+      )
+    );
+  };
 
   useEffect(() => {
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);
     }
-  }, [lastMessage?.reasoning, lastMessage?.content]);
+  }, [messages]);
+
+  useEffect(() => {
+    getConversation();
+  }, []);
 
   const clean = () => {
     stop();
@@ -102,11 +169,11 @@ const Independent: React.FC = () => {
 
   const copy = (message: string) => {
     navigator.clipboard.writeText(message);
-  }
+  };
 
   const reloadMessage = (message: UIMessage) => {
     reload(message);
-  }
+  };
 
   // ==================== Nodes ====================
   const chatRef = useRef<HTMLDivElement>(null);
@@ -137,15 +204,27 @@ const Independent: React.FC = () => {
               </div>
             );
           },
-        }
+        };
 
-        if(index === messages.length - 1) {
+        if (index === messages.length - 1) {
           set.footer = (
             <Space>
-              <Button color="default" variant="text" size="small" icon={<SyncOutlined />} onClick={() => reloadMessage(message)} />
-              <Button color="default" variant="text" size="small" icon={<CopyOutlined />} onClick={() => copy(message.content)} />
+              <Button
+                color="default"
+                variant="text"
+                size="small"
+                icon={<SyncOutlined />}
+                onClick={() => reloadMessage(message)}
+              />
+              <Button
+                color="default"
+                variant="text"
+                size="small"
+                icon={<CopyOutlined />}
+                onClick={() => copy(message.content)}
+              />
             </Space>
-          )
+          );
         }
         return set;
       } else {
@@ -162,7 +241,7 @@ const Independent: React.FC = () => {
       <div className="menu">
         {/* 🌟 添加会话 */}
         <Button
-          onClick={onAddConversation}
+          onClick={() => handleConversation([], true)}
           type="primary"
           className="addBtn"
           icon={<PlusOutlined />}
@@ -176,7 +255,12 @@ const Independent: React.FC = () => {
           activeKey={activeKey}
           onActiveChange={onConversationClick}
         />
-        <Button type="primary" shape="circle" className="configBtn" onClick={() => setOpen(true)}>
+        <Button
+          type="primary"
+          shape="circle"
+          className="configBtn"
+          onClick={() => setOpen(true)}
+        >
           <SmileFilled />
         </Button>
       </div>
@@ -200,7 +284,7 @@ const Independent: React.FC = () => {
           className="sender"
           actions={(_, info) => {
             const { SendButton, LoadingButton, ClearButton } = info.components;
-    
+
             return (
               <Space size="small">
                 <Typography.Text type="secondary">
@@ -208,7 +292,11 @@ const Independent: React.FC = () => {
                 </Typography.Text>
                 <ClearButton onClick={clean} disabled={false} />
                 {loading ? (
-                  <LoadingButton type="default" onClick={stop} disabled={false} />
+                  <LoadingButton
+                    type="default"
+                    onClick={stop}
+                    disabled={false}
+                  />
                 ) : (
                   <SendButton type="primary" disabled={false} />
                 )}

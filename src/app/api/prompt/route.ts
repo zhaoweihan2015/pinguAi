@@ -17,3 +17,11 @@ export async function POST(req: Request) {
   console.log(db.data.prompts);
   return new Response(JSON.stringify({ prompts }));
 }
+
+
+export async function DELETE() {
+  db.data.prompts = "";
+  db.write();
+  console.log("删除prompt==================");
+  return new Response(JSON.stringify({ prompts: "" }));
+}

@@ -1,5 +1,7 @@
 自用 AI，暴躁企鹅
 
+Next.js + Ant Design X + AI SDK + LowDB + DeepSeek
+
 ## Getting Started
 
 First, run the development server:

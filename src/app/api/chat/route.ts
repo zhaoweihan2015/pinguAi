@@ -27,6 +27,9 @@ export async function POST(req: Request) {
           baseURL: process.env.DEEPSEEK_API_URL ?? "",
           apiKey: process.env.DEEPSEEK_API_KEY,
           name: "deepseek",
+          queryParams: {
+            maxTokens: "2000",
+          },
         }).chatModel("deepseek-r1-250120"),
         messages: _meessages,
         system: system ?? "",
