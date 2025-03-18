@@ -5,9 +5,11 @@ import { UserOutlined } from "@ant-design/icons";
 interface ConfigModalProps {
   open: boolean;
   onCancel: () => void;
+  modal: string;
+  setModal: (modal: string) => void;
 }
 
-export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
+export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigModalProps) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { message } = App.useApp();
@@ -20,6 +22,9 @@ export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
         method: "POST",
         body: JSON.stringify({ prompts: prompt }),
       });
+
+      setModal(form.getFieldsValue().model);
+
       message.success("配置成功");
       onCancel();
     } catch (error) {
@@ -37,6 +42,7 @@ export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
           const prompt = await fetch("/api/prompt").then((res) => res.json());
 
           form.setFieldsValue({
+            model: modal,
             prompt: prompt.prompts,
           });
         } catch (error) {
@@ -73,7 +79,8 @@ export default function ConfigModal({ open, onCancel }: ConfigModalProps) {
         >
           <Form.Item label="模型" name="model">
             <Select>
-              <Select.Option value="deepseek">DeepSeek</Select.Option>
+              <Select.Option value="deepseek">DeepSeek-R1</Select.Option>
+              <Select.Option value="doubao">Doubao-1-5-lite</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="Prompt" name="prompt">

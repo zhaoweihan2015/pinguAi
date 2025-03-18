@@ -6,25 +6,35 @@ import db from "@/db/db";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, system, network } = await req.json();
+  const { messages, system, network, modal } = await req.json();
   console.log(messages[messages.length - 1], network);
 
-  const prompt = db.data.prompts
-
   // 赋予性格和长期记忆
+  const prompt = db.data.prompts
   const _meessages = [
     {
       role: "system",
-      content: prompt,
+      content: prompt + "回复里的引用部分用斜体灰色字",
     },
     ...messages,
   ];
 
-  const isNetwork = network === "1";
+  let baseURL = process.env.DEEPSEEK_API_URL ?? "";
+  let model = "deepseek-r1-250120";
 
-  const baseURL = (isNetwork ? process.env.DEEPSEEK_BOT_API_URL : process.env.DEEPSEEK_API_URL) ?? "";
+  // 选择模型
+  if(modal === "dobao"){
+    model = "doubao-1-5-lite-32k-250115"
+  } else {
+    const isNetwork = network === "1";
 
-  const model = (isNetwork ? process.env.DEEPSEEK_BOT_API_KEY : "deepseek-r1-250120") ?? "";
+    // deepseek联网需要更换url和modal
+    if(isNetwork){
+      baseURL = process.env.DEEPSEEK_BOT_API_URL ?? "";
+      model = process.env.DEEPSEEK_BOT_API_KEY ?? "";
+    }
+  }
+  
 
   return createDataStreamResponse({
     execute: (dataStream) => {

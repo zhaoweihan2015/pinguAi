@@ -1,7 +1,7 @@
 "use client";
 
 import { Bubble, Conversations, ConversationsProps, Sender } from "@ant-design/x";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
   ClearOutlined,
@@ -76,6 +76,8 @@ const Independent: React.FC = () => {
   );
 
   const [isNetwork, setIsNetwork] = React.useState(true);
+
+  const [modal, setModal] = React.useState("deepseek");
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
@@ -93,7 +95,8 @@ const Independent: React.FC = () => {
       content: nextContent,
     },{
       body: {
-        network: isNetwork ? "1" : "0"
+        network: isNetwork ? "1" : "0",
+        modal
       }
     });
     // 清空输入框
@@ -112,7 +115,7 @@ const Independent: React.FC = () => {
     );
   };
 
-  const handleConversation = async (
+  const handleConversation = useCallback(async (
     messages: UIMessage[] = [],
     create = false
   ) => {
@@ -150,7 +153,7 @@ const Independent: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [conversationsItems, activeKey]);
 
   const handleDelete = async (key: string) => {
     try {
@@ -289,7 +292,7 @@ const Independent: React.FC = () => {
   // ==================== Render =================
   return (
     <div className="layout">
-      <ConfigModal open={open} onCancel={() => setOpen(false)} />
+      <ConfigModal open={open} onCancel={() => setOpen(false)} modal={modal} setModal={setModal} />
       <div className="menu">
         {/* 🌟 添加会话 */}
         <Button
@@ -338,6 +341,7 @@ const Independent: React.FC = () => {
           header={
             <div className="sender-header">
               <Switch
+                disabled={modal === "doubao"}
                 checked={isNetwork}
                 checkedChildren={'联网'}
                 unCheckedChildren={'断网'}
