@@ -12,7 +12,7 @@ import {
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, type GetProp, Space, Typography, App } from "antd";
+import { Button, type GetProp, Space, Typography, App, Switch } from "antd";
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
@@ -74,6 +74,8 @@ const Independent: React.FC = () => {
     () => status === "submitted" || status === "streaming",
     [status]
   );
+
+  const [isNetwork, setIsNetwork] = React.useState(true);
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
@@ -91,7 +93,7 @@ const Independent: React.FC = () => {
       content: nextContent,
     },{
       body: {
-        network: "0"
+        network: isNetwork ? "1" : "0"
       }
     });
     // 清空输入框
@@ -333,6 +335,16 @@ const Independent: React.FC = () => {
           onChange={setInput}
           loading={loading}
           className="sender"
+          header={
+            <div className="sender-header">
+              <Switch
+                checked={isNetwork}
+                checkedChildren={'联网'}
+                unCheckedChildren={'断网'}
+                onChange={setIsNetwork}
+              />
+            </div>
+          }
           actions={(_, info) => {
             const { SendButton, LoadingButton } = info.components;
 
