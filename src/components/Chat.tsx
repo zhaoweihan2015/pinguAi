@@ -35,7 +35,6 @@ const roles: GetProp<typeof Bubble.List, "roles"> = {
       icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />,
       style: { background: "#fde3cf" },
     },
-    typing: { step: 5, interval: 20 },
     style: {
       maxWidth: "90%",
     },
@@ -59,7 +58,11 @@ const Independent: React.FC = () => {
     append,
     status,
     stop,
-  } = useChat();
+  } = useChat({
+    onToolCall({ toolCall }) {
+      console.log(toolCall);
+    },
+  });
   // ==================== State ====================
   const [conversationsItems, setConversationsItems] = React.useState<
     GetProp<typeof Conversations, "items">
@@ -187,6 +190,7 @@ const Independent: React.FC = () => {
   };
 
   useEffect(() => {
+    console.log("messages", messages)
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);

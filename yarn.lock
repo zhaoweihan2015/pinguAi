@@ -2,6 +2,23 @@
 # yarn lockfile v1
 
 
+"@ai-sdk/deepseek@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.npmmirror.com/@ai-sdk/deepseek/-/deepseek-0.1.15.tgz#5dd6df53b0160ed8a0c0ce008222fad62ae39db6"
+  integrity sha512-0sB3G71eXI7ND4fa9MwBIyN+tTwnH0MQs2Sc+8gGluMy6FtlQi1x49j0yWp1jWSp8E0T31zU7Po7U77NEM0Wxw==
+  dependencies:
+    "@ai-sdk/openai-compatible" "0.1.15"
+    "@ai-sdk/provider" "1.0.11"
+    "@ai-sdk/provider-utils" "2.1.13"
+
+"@ai-sdk/openai-compatible@0.1.15":
+  version "0.1.15"
+  resolved "https://registry.npmmirror.com/@ai-sdk/openai-compatible/-/openai-compatible-0.1.15.tgz#a7336d63a400da1c02ac530f42a67d57c9248015"
+  integrity sha512-iuylARLylTkaVYXKdgA1GeGU2TwANaJ3RlhJqmN0cVO5uEt3qVKvedrzR3jrQIyy9hu3gngsiXfFBMW2UQ7Ntg==
+  dependencies:
+    "@ai-sdk/provider" "1.0.11"
+    "@ai-sdk/provider-utils" "2.1.13"
+
 "@ai-sdk/openai-compatible@^0.1.13":
   version "0.1.13"
   resolved "https://registry.npmmirror.com/@ai-sdk/openai-compatible/-/openai-compatible-0.1.13.tgz"
@@ -20,10 +37,27 @@
     nanoid "^3.3.8"
     secure-json-parse "^2.7.0"
 
+"@ai-sdk/provider-utils@2.1.13":
+  version "2.1.13"
+  resolved "https://registry.npmmirror.com/@ai-sdk/provider-utils/-/provider-utils-2.1.13.tgz#060700e5e8032820f297828fc0f47e81aa8ce978"
+  integrity sha512-kLjqsfOdONr6DGcGEntFYM1niXz1H05vyZNf9OAzK+KKKc64izyP4/q/9HX7W4+6g8hm6BnmKxu8vkr6FSOqDg==
+  dependencies:
+    "@ai-sdk/provider" "1.0.11"
+    eventsource-parser "^3.0.0"
+    nanoid "^3.3.8"
+    secure-json-parse "^2.7.0"
+
 "@ai-sdk/provider@1.0.10":
   version "1.0.10"
   resolved "https://registry.npmmirror.com/@ai-sdk/provider/-/provider-1.0.10.tgz"
   integrity sha512-pco8Zl9U0xwXI+nCLc0woMtxbvjU8hRmGTseAUiPHFLYAAL8trRPCukg69IDeinOvIeo1SmXxAIdWWPZOLb4Cg==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@1.0.11":
+  version "1.0.11"
+  resolved "https://registry.npmmirror.com/@ai-sdk/provider/-/provider-1.0.11.tgz#c1141b622f6a72551719c106b613c2350c6a29e0"
+  integrity sha512-CPyImHGiT3svyfmvPvAFTianZzWFtm0qK82XjwlQIA1C3IQ2iku/PMQXi7aFyrX0TyMh3VTkJPB03tjU2VXVrw==
   dependencies:
     json-schema "^0.4.0"
 
@@ -1391,6 +1425,11 @@ chalk@^5.3.0:
   resolved "https://registry.npmmirror.com/chalk/-/chalk-5.4.1.tgz"
   integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
 
+chalk@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.npmmirror.com/chalk/-/chalk-5.4.1.tgz#1b48bf0963ec158dce2aacf69c093ae2dd2092d8"
+  integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
+
 character-entities-html4@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmmirror.com/character-entities-html4/-/character-entities-html4-2.1.0.tgz"
@@ -1553,14 +1592,9 @@ data-view-byte-offset@^1.0.1:
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
 
-dayjs@^1.11.11:
+dayjs@^1.11.11, dayjs@^1.11.13:
   version "1.11.13"
   resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.13.tgz"
-  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
-
-dayjs@^1.11.13:
-  version "1.11.13"
-  resolved "https://registry.npmmirror.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
 debug@^3.2.7:

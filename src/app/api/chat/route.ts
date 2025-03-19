@@ -2,7 +2,7 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, createDataStreamResponse } from "ai";
 import db from "@/db/db";
-
+import tools from "./tools";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -44,12 +44,12 @@ export async function POST(req: Request) {
           baseURL,
           apiKey: process.env.DEEPSEEK_API_KEY,
           name: "deepseek",
-          queryParams: {
-            maxTokens: "2000",
-          },
         }).chatModel(model),
         messages: _meessages,
         system: system ?? "",
+        tools,
+        maxSteps: 5,
+        toolChoice: "auto",
       });
 
       result.mergeIntoDataStream(dataStream, {
