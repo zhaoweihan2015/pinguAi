@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   let model = "deepseek-r1-250120";
 
   // 选择模型
-  if(modal === "dobao"){
+  if(modal === "doubao"){
     model = "doubao-1-5-lite-32k-250115"
   } else {
     const isNetwork = network === "1";
@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     }
   }
   
+  console.log("使用的模型：", model, modal);
 
   return createDataStreamResponse({
     execute: (dataStream) => {

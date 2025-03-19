@@ -252,9 +252,13 @@ const Independent: React.FC = () => {
           messageRender: (content?: string) => {
             return (
               <div>
-                <div className="reasoning">
-                  <ChatMarkDown>{message.reasoning}</ChatMarkDown>
-                </div>
+                {
+                  message.reasoning && (
+                    <div className="reasoning">
+                      <ChatMarkDown>{message.reasoning}</ChatMarkDown>
+                    </div>
+                  )
+                }
                 <ChatMarkDown>{content}</ChatMarkDown>
               </div>
             );
