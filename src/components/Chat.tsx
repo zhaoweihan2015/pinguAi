@@ -59,9 +59,7 @@ const Independent: React.FC = () => {
     status,
     stop,
   } = useChat({
-    onToolCall({ toolCall }) {
-      console.log(toolCall);
-    },
+    experimental_throttle: 100
   });
   // ==================== State ====================
   const [conversationsItems, setConversationsItems] = React.useState<
@@ -195,7 +193,8 @@ const Independent: React.FC = () => {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);
     }
-  }, [messages]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(messages)]);
 
   useEffect(() => {
     getConversation();
@@ -245,7 +244,7 @@ const Independent: React.FC = () => {
           role: "user",
           content: message.content,
           messageRender: (content) => {
-            return <ChatMarkDown>{content}</ChatMarkDown>;
+            return <ChatMarkDown key={`usertext-${message.id}`}>{content}</ChatMarkDown>;
           },
         };
       } else if (message.role === "assistant") {
@@ -259,11 +258,11 @@ const Independent: React.FC = () => {
                 {
                   message.reasoning && (
                     <div className="reasoning">
-                      <ChatMarkDown>{message.reasoning}</ChatMarkDown>
+                      <ChatMarkDown key={`reasoning-${message.id}`}>{message.reasoning}</ChatMarkDown>
                     </div>
                   )
                 }
-                <ChatMarkDown>{content}</ChatMarkDown>
+                <ChatMarkDown key={`content-${message.id}`}>{content}</ChatMarkDown>
               </div>
             );
           },
@@ -295,7 +294,7 @@ const Independent: React.FC = () => {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages]);
+  }, [JSON.stringify(messages)]);
 
   // ==================== Render =================
   return (

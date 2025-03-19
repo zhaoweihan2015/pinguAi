@@ -2,22 +2,6 @@ import { tool } from "ai";
 import { z } from "zod";
 import chalk from "chalk";
 
-// 获取指定地点的天气信息
-const getWeather = tool({
-  description: "获取指定地点的天气信息",
-  parameters: z.object({
-    location: z.string().describe("要查询天气的地点"),
-  }),
-  execute: async ({ location }) => {
-    console.log(chalk.blue("使用了工具getWeather"))
-
-    return {
-      location,
-      temperature: 22,
-    }; // 示例返回值
-  },
-});
-
 // 获取B站实时热搜榜单
 const getBilibiliHotSearch = tool({
   description: "获取B站实时热搜榜单",
@@ -51,7 +35,6 @@ const getMoYuTime = tool({
 });
 
 const tools = {
-  getWeather,
   getBilibiliHotSearch,
   getMoYuTime
 };

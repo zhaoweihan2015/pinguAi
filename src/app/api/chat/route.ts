@@ -3,6 +3,8 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, createDataStreamResponse } from "ai";
 import db from "@/db/db";
 import tools from "./tools";
+import chalk from "chalk";
+
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -35,7 +37,7 @@ export async function POST(req: Request) {
     }
   }
   
-  console.log("使用的模型：", model, modal);
+  console.log(chalk.greenBright("使用的模型：", model));
 
   return createDataStreamResponse({
     execute: (dataStream) => {
