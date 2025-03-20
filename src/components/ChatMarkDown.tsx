@@ -17,5 +17,5 @@ const md = new MarkdownIt({
 });
 
 export default function ChatMarkDown({ children, key }: { children: string | undefined, key: string }) {
-  return <div dangerouslySetInnerHTML={{ __html: md.render(children || "") }} key={key} />;
+  return <div dangerouslySetInnerHTML={{ __html: md.render(children || "") }} key={key ?? ""} />;
 }

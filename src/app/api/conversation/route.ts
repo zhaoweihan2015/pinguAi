@@ -16,19 +16,19 @@ export async function POST (req: Request) {
     console.log(name);
     
     await db.read();
-    
+
     const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
 
     if(!(key in conversation)) {
         conversation[key] = {
             ...conversation[key],
             key,
-            name
         }
     }
     
     conversation[key] = {
         ...conversation[key],
+        name,
         messages,
         updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
         createTime: key in conversation ? conversation[key].createTime : dayjs().format("YYYY-MM-DD HH:mm:ss")

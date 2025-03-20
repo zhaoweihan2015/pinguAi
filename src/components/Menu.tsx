@@ -48,7 +48,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
       async (messages: UIMessage[] = [], create = false) => {
         const id = create ? new Date().getTime().toString() : activeKey;
 
-        const name = messages[0]?.content.slice(0, 10) ?? "New Conversation";
+        const name = messages[0]?.content.slice(0, 10) ?? "";
 
         try {
           await fetch("/api/conversation", {
@@ -67,7 +67,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
           if (create) {
             _conversationsItems.push({
               key: id,
-              label: name,
+              label: name ?? "新的对话",
               messages: JSON.stringify(messages),
             });
           } else if (nowItem) {
@@ -144,11 +144,17 @@ const Menu = forwardRef<MenuRef, MenuProps>(
       );
     };
 
+    const addConversation = () => {
+      setMessages([]);
+
+      handleConversation([], true);
+    };
+
     return (
       <div className="menu">
         {/* 🌟 添加会话 */}
         <Button
-          onClick={() => handleConversation([], true)}
+          onClick={addConversation}
           type="primary"
           className="addBtn"
           icon={<PlusOutlined />}

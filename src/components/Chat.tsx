@@ -1,7 +1,7 @@
 "use client";
 
-import { Bubble, Conversations, Sender } from "@ant-design/x";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { Bubble, Sender } from "@ant-design/x";
+import React, { useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
   ClearOutlined,
@@ -94,7 +94,6 @@ const Independent: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log("messages", messages);
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);

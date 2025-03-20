@@ -16,12 +16,19 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
 
   const onOk = async () => {
     setLoading(true);
-    const { prompt } = form.getFieldsValue();
+    const { prompt, memory } = form.getFieldsValue();
     try {
       await fetch("/api/prompt", {
         method: "POST",
         body: JSON.stringify({ prompts: prompt }),
       });
+
+      await fetch("/api/memory", {
+        method: "POST",
+        body: JSON.stringify({ memory: memory.split("\n") }),
+      });
+      
+      console.log(memory,"??")
 
       setModal(form.getFieldsValue().model);
 
@@ -39,11 +46,15 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
       (async () => {
         setLoading(true);
         try {
-          const prompt = await fetch("/api/prompt").then((res) => res.json());
+          const [prompt, memory] = await Promise.all([
+            fetch("/api/prompt").then((res) => res.json()),
+            fetch("/api/memory").then((res) => res.json()),
+          ]);
 
           form.setFieldsValue({
             model: modal,
             prompt: prompt.prompts,
+            memory: memory.memory.join("\n"),
           });
         } catch (error) {
           console.error(error);
@@ -83,7 +94,10 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
               <Select.Option value="doubao">Doubao-1-5-lite</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Prompt" name="prompt">
+          <Form.Item label="性格" name="prompt">
+            <Input.TextArea rows={8} autoSize={{ minRows: 8, maxRows: 8 }} />
+          </Form.Item>
+          <Form.Item label="记忆" name="memory">
             <Input.TextArea rows={8} autoSize={{ minRows: 8, maxRows: 8 }} />
           </Form.Item>
         </Form>
