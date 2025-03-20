@@ -16,7 +16,11 @@ export async function POST(req: Request) {
   const _meessages = [
     {
       role: "system",
-      content: prompt + "回复里的引用部分用斜体灰色字",
+      content: prompt, // 性格
+    },
+    {
+      role: "system",
+      content: db.data.memory.join(";") // 长期记忆
     },
     ...messages,
   ];

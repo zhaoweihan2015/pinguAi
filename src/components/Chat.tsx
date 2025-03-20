@@ -76,7 +76,7 @@ const Independent: React.FC = () => {
     [status]
   );
 
-  const [isNetwork, setIsNetwork] = React.useState(true);
+  const [isNetwork, setIsNetwork] = React.useState(false);
 
   const [modal, setModal] = React.useState("deepseek");
   // ==================== Event ====================

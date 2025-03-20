@@ -1,15 +1,6 @@
 
-import db from "@/db/db";
+import db, { ConversationType } from "@/db/db";
 import dayjs from "dayjs"
-
-interface ConversationType {
-    key: string;
-    name: string;
-    messages: string;
-    createTime?: string;
-    updateTime?: string;
-}
-
 
 export async function GET() {
     const { conversation } = db.data;
@@ -24,6 +15,8 @@ export async function POST (req: Request) {
 
     console.log("创建对话==================");
     console.log(name);
+
+    await db.read();
 
     if(!(key in conversation)) {
         conversation[key] = {
@@ -40,7 +33,7 @@ export async function POST (req: Request) {
         createTime: key in conversation ? conversation[key].createTime : dayjs().format("YYYY-MM-DD HH:mm:ss")
     }
 
-    db.write();
+    await db.write();
 
     return new Response(JSON.stringify({
         message: "success"
