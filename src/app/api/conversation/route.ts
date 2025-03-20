@@ -37,7 +37,8 @@ export async function POST (req: Request) {
     await db.write();
 
     return new Response(JSON.stringify({
-        message: "success"
+        message: "success",
+        conversation
     }));
 }
 

@@ -48,7 +48,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
       async (messages: UIMessage[] = [], create = false) => {
         const id = create ? new Date().getTime().toString() : activeKey;
 
-        const name = messages[0]?.content.slice(0, 10) ?? "";
+        const name = messages[0]?.content.slice(0, 10) ?? "新的对话";
 
         try {
           await fetch("/api/conversation", {
@@ -67,11 +67,12 @@ const Menu = forwardRef<MenuRef, MenuProps>(
           if (create) {
             _conversationsItems.push({
               key: id,
-              label: name ?? "新的对话",
+              label: name,
               messages: JSON.stringify(messages),
             });
           } else if (nowItem) {
             nowItem.messages = JSON.stringify(messages);
+            nowItem.label = name;
           }
 
           setConversationsItems(_conversationsItems);
