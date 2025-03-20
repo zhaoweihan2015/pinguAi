@@ -11,12 +11,13 @@ export async function GET() {
 export async function POST (req: Request) {
     const { key, name, messages } = await req.json();
     
-    const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
-
+    
     console.log("创建对话==================");
     console.log(name);
-
+    
     await db.read();
+    
+    const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
 
     if(!(key in conversation)) {
         conversation[key] = {

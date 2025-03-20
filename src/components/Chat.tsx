@@ -1,32 +1,23 @@
 "use client";
 
-import { Bubble, Conversations, ConversationsProps, Sender } from "@ant-design/x";
+import { Bubble, Conversations, Sender } from "@ant-design/x";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import {
   ClearOutlined,
   CopyOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  SmileFilled,
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, type GetProp, Space, Typography, App, Switch } from "antd";
+import { Button, type GetProp, Space, Typography, Switch } from "antd";
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
 import { UIMessage } from "ai";
 import PlaceHolderNode from "./PlaceHolderNode";
 import ConfigModal from "./ConfigModal";
-
-interface ConversationType {
-  key: string;
-  name: string;
-  messages: string;
-  createTime?: string;
-  updateTime?: string;
-}
+import Menu, { MenuRef } from "./Menu";
+import { useGlobalState } from "@/lib/hooks/useGlobal";
 
 const roles: GetProp<typeof Bubble.List, "roles"> = {
   ai: {
@@ -46,8 +37,6 @@ const roles: GetProp<typeof Bubble.List, "roles"> = {
 };
 
 const Independent: React.FC = () => {
-  const { message } = App.useApp();
-
   // ==================== Runtime ====================
   const {
     messages,
@@ -59,15 +48,10 @@ const Independent: React.FC = () => {
     status,
     stop,
   } = useChat({
-    experimental_throttle: 100
+    experimental_throttle: 100,
   });
   // ==================== State ====================
-  const [conversationsItems, setConversationsItems] = React.useState<
-    GetProp<typeof Conversations, "items">
-  >([]);
-
-  const [activeKey, setActiveKey] =
-    React.useState<GetProp<typeof Conversations, "activeKey">>("");
+  const { activeKey } = useGlobalState();
 
   const [open, setOpen] = React.useState(false);
 
@@ -79,10 +63,12 @@ const Independent: React.FC = () => {
   const [isNetwork, setIsNetwork] = React.useState(false);
 
   const [modal, setModal] = React.useState("deepseek");
+
+  const menuRef = useRef<MenuRef>(null);
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
-      handleConversation(messages, !activeKey);
+      menuRef.current?.handleConversation(messages, !activeKey);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
@@ -90,120 +76,36 @@ const Independent: React.FC = () => {
   const onSubmit = (nextContent: string) => {
     if (!nextContent) return;
     // 向ai提交
-    append({
-      role: "user",
-      id: `user-${new Date().getTime().toString()}`,
-      content: nextContent,
-    },{
-      body: {
-        network: isNetwork ? "1" : "0",
-        modal
+    append(
+      {
+        role: "user",
+        id: `user-${new Date().getTime().toString()}`,
+        content: nextContent,
+      },
+      {
+        body: {
+          network: isNetwork ? "1" : "0",
+          modal,
+        },
       }
-    });
+    );
     // 清空输入框
     setInput("");
   };
 
-  const getConversation = async () => {
-    const res = await fetch("/api/conversation");
-    const data: Record<string, ConversationType> = await res.json();
-    setConversationsItems(
-      Object.values(data).map((item: ConversationType) => ({
-        key: item.key,
-        label: item.name,
-        messages: item.messages,
-      }))
-    );
-  };
-
-  const handleConversation = useCallback(async (
-    messages: UIMessage[] = [],
-    create = false
-  ) => {
-    const id = create ? new Date().getTime().toString() : activeKey;
-
-    const name = messages[0]?.content.slice(0, 10) ?? "New Conversation";
-
-    try {
-      await fetch("/api/conversation", {
-        method: "POST",
-        body: JSON.stringify({
-          key: id,
-          name,
-          messages: JSON.stringify(messages),
-        }),
-      });
-
-      const _conversationsItems = [...conversationsItems];
-
-      const nowItem = _conversationsItems.find((item) => item.key === id);
-
-      if (create) {
-        _conversationsItems.push({
-          key: id,
-          label: name,
-          messages: JSON.stringify(messages),
-        });
-      } else if(nowItem) {
-        nowItem.messages = JSON.stringify(messages);
-      }
-
-      setConversationsItems(_conversationsItems);
-
-      setActiveKey(id);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [conversationsItems, activeKey]);
-
-  const handleDelete = async (key: string) => {
-    try {
-      await fetch("/api/conversation", {
-        method: "DELETE",
-        body: JSON.stringify({ key }),
-      });
-
-      setActiveKey("");
-      setMessages([]);
-      setInput("");
-
-      getConversation();
-
-      message.success("删除成功");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onConversationClick: GetProp<typeof Conversations, "onActiveChange"> = (
-    key
-  ) => {
-    setActiveKey(key);
-
-    setMessages(
-      JSON.parse(
-        conversationsItems.find((item) => item.key === key)?.messages ?? "[]"
-      )
-    );
-  };
-
   useEffect(() => {
-    console.log("messages", messages)
+    console.log("messages", messages);
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(messages)]);
 
-  useEffect(() => {
-    getConversation();
-  }, []);
-
   const clean = () => {
-    if(!activeKey) return;
+    if (!activeKey) return;
 
-    handleConversation([]);
+    menuRef.current?.handleConversation([]);
     stop();
     setMessages([]);
     setInput("");
@@ -220,22 +122,6 @@ const Independent: React.FC = () => {
   // ==================== Nodes ====================
   const chatRef = useRef<HTMLDivElement>(null);
 
-  const menuConfig: ConversationsProps['menu'] = (conversation) => ({
-    items: [
-      {
-        label: '删除',
-        key: 'delete',
-        icon: <DeleteOutlined />,
-        danger: true,
-      },
-    ],
-    onClick: (menuInfo) => {
-      if(menuInfo.key === 'delete') {
-        handleDelete(conversation.key);
-      }
-    },
-  });
-
   const items: GetProp<typeof Bubble.List, "items"> = useMemo(() => {
     return messages.map((message, index) => {
       if (message.role === "user") {
@@ -244,7 +130,11 @@ const Independent: React.FC = () => {
           role: "user",
           content: message.content,
           messageRender: (content) => {
-            return <ChatMarkDown key={`usertext-${message.id}`}>{content}</ChatMarkDown>;
+            return (
+              <ChatMarkDown key={`usertext-${message.id}`}>
+                {content}
+              </ChatMarkDown>
+            );
           },
         };
       } else if (message.role === "assistant") {
@@ -255,14 +145,16 @@ const Independent: React.FC = () => {
           messageRender: (content?: string) => {
             return (
               <div>
-                {
-                  message.reasoning && (
-                    <div className="reasoning">
-                      <ChatMarkDown key={`reasoning-${message.id}`}>{message.reasoning}</ChatMarkDown>
-                    </div>
-                  )
-                }
-                <ChatMarkDown key={`content-${message.id}`}>{content}</ChatMarkDown>
+                {message.reasoning && (
+                  <div className="reasoning">
+                    <ChatMarkDown key={`reasoning-${message.id}`}>
+                      {message.reasoning}
+                    </ChatMarkDown>
+                  </div>
+                )}
+                <ChatMarkDown key={`content-${message.id}`}>
+                  {content}
+                </ChatMarkDown>
               </div>
             );
           },
@@ -299,34 +191,18 @@ const Independent: React.FC = () => {
   // ==================== Render =================
   return (
     <div className="layout">
-      <ConfigModal open={open} onCancel={() => setOpen(false)} modal={modal} setModal={setModal} />
-      <div className="menu">
-        {/* 🌟 添加会话 */}
-        <Button
-          onClick={() => handleConversation([], true)}
-          type="primary"
-          className="addBtn"
-          icon={<PlusOutlined />}
-        >
-          添加对话
-        </Button>
-        {/* 🌟 会话管理 */}
-        <Conversations
-          items={conversationsItems}
-          className="conversations"
-          activeKey={activeKey}
-          menu={menuConfig}
-          onActiveChange={onConversationClick}
-        />
-        <Button
-          type="primary"
-          shape="circle"
-          className="configBtn"
-          onClick={() => setOpen(true)}
-        >
-          <SmileFilled />
-        </Button>
-      </div>
+      <ConfigModal
+        open={open}
+        onCancel={() => setOpen(false)}
+        modal={modal}
+        setModal={setModal}
+      />
+      <Menu
+        ref={menuRef}
+        setOpen={setOpen}
+        setMessages={setMessages}
+        setInput={setInput}
+      />
       <div className="chat" ref={chatRef}>
         {/* 🌟 消息列表 */}
         <Bubble.List
@@ -350,8 +226,8 @@ const Independent: React.FC = () => {
               <Switch
                 disabled={modal === "doubao"}
                 checked={isNetwork}
-                checkedChildren={'联网'}
-                unCheckedChildren={'断网'}
+                checkedChildren={"联网"}
+                unCheckedChildren={"断网"}
                 onChange={setIsNetwork}
               />
             </div>
