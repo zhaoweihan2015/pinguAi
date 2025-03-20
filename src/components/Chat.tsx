@@ -49,8 +49,21 @@ const Independent: React.FC = () => {
     stop,
   } = useChat({
     experimental_throttle: 100,
+    onToolCall: ({ toolCall }) => {
+      if (toolCall.toolName === "setMemory") {
+        if (timer.current) clearTimeout(timer.current);
+
+        setShowMemoryUpdate(true);
+
+        timer.current = setTimeout(() => {
+          setShowMemoryUpdate(false);
+        }, 5000);
+      }
+    },
   });
   // ==================== State ====================
+  const timer = useRef<NodeJS.Timeout | null>(null);
+
   const { activeKey } = useGlobalState();
 
   const [open, setOpen] = React.useState(false);
@@ -65,6 +78,8 @@ const Independent: React.FC = () => {
   const [modal, setModal] = React.useState("deepseek");
 
   const menuRef = useRef<MenuRef>(null);
+
+  const [showMemoryUpdate, setShowMemoryUpdate] = React.useState(false);
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
@@ -144,6 +159,15 @@ const Independent: React.FC = () => {
           messageRender: (content?: string) => {
             return (
               <div>
+                {index === messages.length - 1 && (
+                  <div
+                    className={`memory-update ${
+                      showMemoryUpdate ? "show" : ""
+                    }`}
+                  >
+                    记忆已更新...
+                  </div>
+                )}
                 {message.reasoning && (
                   <div className="reasoning">
                     <ChatMarkDown key={`reasoning-${message.id}`}>

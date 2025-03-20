@@ -190,3 +190,23 @@ pre {
   color: #999;
   line-height: 1;
 }
+
+.memory-update {
+  font-size: 16px;
+  background: linear-gradient(90deg, #4a4a4a, #a3a3a3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: bold;
+  width: auto;
+  display: inline-block;
+  letter-spacing: 0.5px;
+  position: absolute;
+  top: -28px;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.memory-update.show {
+  opacity: 1;
+}
