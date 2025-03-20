@@ -2,22 +2,10 @@
 @import "highlight.js/styles/androidstudio.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #1A1E26;
+  --foreground: #fff;
+  --menu-background: #2D333B;
+  --button-background: #FF6B6B;
 }
 
 body {
@@ -35,8 +23,19 @@ pre {
   color: #fff;
 }
 
+.ant-bubble-content {
+  background-color: var(--button-background) !important;
+}
+
+.bubble-response .ant-bubble-content {
+  background-color: #2D333B !important;
+  box-shadow: 0px 0px 10px #FF6B6B;
+  color: rgb(214, 212, 212) !important;
+}
+
 .ant-bubble-content p {
   padding: 5px 0;
+  color: white;
 }
 
 .ant-space-item {
@@ -59,7 +58,7 @@ pre {
   height: 100vh;
   border-radius: 10px;
   display: flex;
-  background: #f5f5f5;
+  background: var(--background);
   font-family: AlibabaPuHuiTi, sans-serif;
 
   .ant-prompts {
@@ -69,7 +68,7 @@ pre {
 
 .menu {
   position: relative;
-  background: #eeeeeecb;
+  background: var(--menu-background);
   width: 400px;
   height: 100%;
   display: flex;
@@ -90,16 +89,29 @@ pre {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  gap: 16px;
+  padding-bottom: 20px;
 }
 
 .messages {
   flex: 1;
+  padding: 20px;
 }
 
-.sender {
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+.sender.ant-sender {
+  box-shadow: 0 0 10px 0 rgba(255, 255, 255,0.4);
+  width: calc(100% - 40px) !important;
+  margin: 0 20px;
+  border-color: white;
+}
+
+.sender.ant-sender:focus-within {
+  box-shadow: 0 0 10px 0 var(--button-background);
+}
+
+.sender .ant-input,
+.sender .ant-typography.ant-typography-secondary,
+.sender .anticon {
+  color: white!important;
 }
 
 .logo {
@@ -134,15 +146,21 @@ pre {
 
 .reasoning {
   font-size: 12px;
-  color: #999;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 10px;
   max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: #f7f7f7;
+  background-color: #414141;
   border-radius: 10px;
   margin-bottom: 10px;
+  box-sizing: border-box;
+  line-height: 16px;
+  border-top-right-radius: 0;
+  color: #fce0d9;
+}
+
+.reasoning p {
+  color: #FF6B6B;
 }
 
 .placeholder {
@@ -163,26 +181,38 @@ pre {
   padding: 10px 0 0 10px;
 }
 
+.welcome {
+  background-color: var(--background);
+}
+
 
 .welcome h1 {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
   line-height: 1.5;
+  color: #fff;
 }
 
 .welcome p {
   font-size: 16px;
   line-height: 1.5;
   margin-bottom: 10px;
-  color: #353535;
+  color: #d6d5d5;
 }
 
 .welcome h2 {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #fff;
 }
+
+.welcome h1,
+.welcome h2 {
+  border-bottom: 1px solid var(--button-background);
+}
+
 
 .welcome .tip p {
   padding-left: 20px;
@@ -193,7 +223,7 @@ pre {
 
 .memory-update {
   font-size: 16px;
-  background: linear-gradient(90deg, #4a4a4a, #a3a3a3);
+  background: linear-gradient(90deg, #6DECAF, #a3a3a3);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -202,11 +232,27 @@ pre {
   display: inline-block;
   letter-spacing: 0.5px;
   position: absolute;
-  top: -28px;
+  top: -35px;
   opacity: 0;
   transition: opacity 0.6s ease-in-out;
 }
 
 .memory-update.show {
   opacity: 1;
+}
+
+.ant-bubble-footer .ant-btn {
+  color: white;
+}
+
+.ant-bubble-footer .ant-btn:hover {
+  color: var(--button-background) !important;
+}
+
+.ant-conversations .ant-conversations-label {
+  color: #fff !important;
+}
+
+.ant-conversations .ant-conversations-item-active {
+  background-color: var(--button-background) !important;
 }

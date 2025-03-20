@@ -47,7 +47,13 @@ export default function Welcome() {
                     getMoYuTime：获取摸鱼日历
                 </p>
                 </div>
-
+                <h2> v0.0.4 </h2>
+                <p>优化代码</p>
+                <p>展示存储的记忆</p>
+                <p>调整新对话的显示</p>
+                <p>
+                    调整样式
+                </p>
             </div>
         </Space>
     )

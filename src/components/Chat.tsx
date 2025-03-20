@@ -156,6 +156,7 @@ const Independent: React.FC = () => {
           key: message.id,
           role: "ai",
           content: message.content,
+          className: "bubble-response",
           messageRender: (content?: string) => {
             return (
               <div>
@@ -228,15 +229,21 @@ const Independent: React.FC = () => {
       />
       <div className="chat" ref={chatRef}>
         {/* 🌟 消息列表 */}
-        <Bubble.List
-          items={
-            items.length > 0
-              ? items
-              : [{ content: <PlaceHolderNode />, variant: "borderless" }]
-          }
-          roles={roles}
-          className="messages"
-        />
+        {messages.length > 0 ? (
+          <Bubble.List
+            items={
+              items.length > 0
+                ? items
+                : [{ content: <PlaceHolderNode />, variant: "borderless" }]
+            }
+            roles={roles}
+            className="messages"
+          />
+        ) : (
+          <div className="messages">
+            <PlaceHolderNode />
+          </div>
+        )}
         {/* 🌟 输入框 */}
         <Sender
           value={input}

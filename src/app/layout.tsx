@@ -8,7 +8,9 @@ const RootLayout = ({ children }: React.PropsWithChildren) => (
     <body>
       <ConfigProvider
         theme={{
-          token: {},
+          token: {
+            colorPrimary: "#FF6B6B",
+          },
         }}
       >
         <GlobalProvider>

@@ -27,6 +27,7 @@ deepseek 固定开启了推理功能，不想要推理把模型改成 doubao
 ### v0.0.3
 
 - 添加了 function calling 功能
+
   > 增加可用工具：
   >
   > getMemory：获取记忆
@@ -36,3 +37,10 @@ deepseek 固定开启了推理功能，不想要推理把模型改成 doubao
   > getBilibiliHotSearch：获取 B 站热搜
   >
   > getMoYuTime：获取摸鱼日历
+
+### v0.0.4
+
+- 优化代码
+- 展示存储的记忆
+- 调整新对话的显示
+- 调整样式
