@@ -212,6 +212,7 @@ pre {
 
 .welcome {
   background-color: var(--background);
+  padding: 0 20px 40px 20px;
 }
 
 
