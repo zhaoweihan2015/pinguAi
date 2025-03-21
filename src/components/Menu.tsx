@@ -1,6 +1,6 @@
 import { Conversations, ConversationsProps } from "@ant-design/x";
-import { App, Button, GetProp } from "antd";
-import { DeleteOutlined, PlusOutlined, SmileFilled } from "@ant-design/icons";
+import { App, Button, Drawer, GetProp } from "antd";
+import { DeleteOutlined, PlusOutlined, SmileFilled, UnorderedListOutlined } from "@ant-design/icons";
 import { useGlobalState } from "@/lib/hooks/useGlobal";
 import {
   forwardRef,
@@ -20,12 +20,56 @@ interface MenuProps {
   setInput: (input: string) => void;
 }
 
+interface MenuDrawerProps {
+  children: React.ReactNode;
+}
+
 export interface MenuRef {
   handleConversation: (
     messages: UIMessage[],
     create?: boolean
   ) => Promise<void>;
 }
+
+const MenuDrawer: React.FC<MenuDrawerProps> = ({ children }) => {
+  const [useDrawer, setUseDrawer] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < 1000) {
+        setUseDrawer(true);
+      } else {
+        setUseDrawer(false);
+      }
+    });
+
+    return () => {
+      window.removeEventListener("resize", () => {});
+    };
+  }, []);
+
+  return (
+    useDrawer ? (
+      <>
+        <div className="menuBtnContainer">
+          <Button
+            type="primary"
+            className="menuBtn"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <UnorderedListOutlined />
+          </Button>
+        </div>
+        <Drawer footer={null} width={400} placement="left" title={null} open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+          { children }
+        </Drawer>
+      </>
+    ) : (
+      children
+    )
+  );
+};
 
 const Menu = forwardRef<MenuRef, MenuProps>(
   ({ setOpen, setMessages, setInput }, ref) => {
@@ -152,6 +196,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
     };
 
     return (
+      <MenuDrawer>
       <div className="menu">
         {/* 🌟 添加会话 */}
         <Button
@@ -179,6 +224,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
           <SmileFilled />
         </Button>
       </div>
+      </MenuDrawer>
     );
   }
 );
