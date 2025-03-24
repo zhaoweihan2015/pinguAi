@@ -327,3 +327,38 @@ pre {
 .ant-drawer-body{
   padding: 0 !important;
 }
+
+.ant-upload-list {
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+  height: 0;
+  transform: translateY(-77px);
+}
+
+.upload-file-image {
+  object-fit: cover;
+  border-radius: 5px;
+  box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.5);
+}
+
+.ant-sender-header-content {
+  padding-top: 0 !important;
+}
+
+.upload-drag-icon-container {
+  height: 60px;
+}
+
+.upload-text {
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  height: 20px;
+}
+
+.upload-drag-icon {
+  height: 40px;
+  font-size: 40px;
+  line-height: 40px;
+}

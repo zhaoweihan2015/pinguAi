@@ -6,10 +6,19 @@ import Image from "next/image";
 import {
   ClearOutlined,
   CopyOutlined,
+  InboxOutlined,
+  LinkOutlined,
   SyncOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, type GetProp, Space, Typography, Switch } from "antd";
+import {
+  Button,
+  type GetProp,
+  Space,
+  Typography,
+  Switch,
+  UploadProps,
+} from "antd";
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
@@ -18,6 +27,15 @@ import PlaceHolderNode from "./PlaceHolderNode";
 import ConfigModal from "./ConfigModal";
 import Menu, { MenuRef } from "./Menu";
 import { useGlobalState } from "@/lib/hooks/useGlobal";
+import Dragger from "antd/es/upload/Dragger";
+import { convertToBase64 } from "@/util";
+
+interface UploadFile {
+  uid: string;
+  name: string;
+  base64: string;
+  mimeType: string;
+}
 
 const roles: GetProp<typeof Bubble.List, "roles"> = {
   ai: {
@@ -68,6 +86,8 @@ const Independent: React.FC = () => {
 
   const [open, setOpen] = React.useState(false);
 
+  const [headerOpen, setHeaderOpen] = React.useState(false);
+
   const loading = useMemo(
     () => status === "submitted" || status === "streaming",
     [status]
@@ -80,6 +100,38 @@ const Independent: React.FC = () => {
   const menuRef = useRef<MenuRef>(null);
 
   const [showMemoryUpdate, setShowMemoryUpdate] = React.useState(false);
+
+  const [uploadFiles, setUploadFiles] = React.useState<UploadFile[]>([]);
+
+  const props: UploadProps = {
+    multiple: true,
+    fileList: uploadFiles,
+    customRequest: async ({ file, onSuccess }) => {
+      const uid = new Date().getTime().toString();
+
+      const { base64, mimeType } = await convertToBase64(file as File);
+
+      const name = (file as File).name;
+
+      const newFile = {
+        uid,
+        name,
+        base64,
+        mimeType,
+      }
+
+      onSuccess?.(newFile);
+
+      setUploadFiles((prev) => [...prev, newFile]);
+
+      return Promise.resolve();
+    },
+    itemRender: (_, file) => {
+      return (
+        <Image src={(file as UploadFile).base64} alt={file.name} width={60} height={60} className="upload-file-image" />
+      );
+    },
+  };
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
@@ -101,11 +153,16 @@ const Independent: React.FC = () => {
         body: {
           network: isNetwork ? "1" : "0",
           modal,
-        },
+          files: uploadFiles
+        }
       }
     );
     // 清空输入框
     setInput("");
+    // 清空上传文件
+    setUploadFiles([]);
+    // 关闭上拉框
+    setHeaderOpen(false);
   };
 
   useEffect(() => {
@@ -123,6 +180,8 @@ const Independent: React.FC = () => {
     stop();
     setMessages([]);
     setInput("");
+    setUploadFiles([]);
+    setHeaderOpen(false);
   };
 
   const copy = (message: string) => {
@@ -145,9 +204,20 @@ const Independent: React.FC = () => {
           content: message.content,
           messageRender: (content) => {
             return (
+              <>
+              {
+                // message.parts.map((part) => {
+                //   return (
+                //     <ChatMarkDown key={`usertext-${message.id}`}>
+                //       {part}
+                //     </ChatMarkDown>
+                //   )
+                // })
+              }
               <ChatMarkDown key={`usertext-${message.id}`}>
                 {content}
               </ChatMarkDown>
+              </>
             );
           },
         };
@@ -251,16 +321,48 @@ const Independent: React.FC = () => {
           onChange={setInput}
           loading={loading}
           className="sender"
+          prefix={
+              modal === "doubao-1.5-vision-pro-32k" ? (
+                <Button
+                  type="text"
+                  icon={<LinkOutlined />}
+                  onClick={() => {
+                    setHeaderOpen(!headerOpen);
+                  }}
+                />
+              ) : null
+          }
           header={
-            <div className="sender-header">
-              <Switch
-                disabled={modal === "doubao"}
-                checked={isNetwork}
-                checkedChildren={"联网"}
-                unCheckedChildren={"断网"}
-                onChange={setIsNetwork}
-              />
-            </div>
+            <>
+              <Sender.Header
+                open={headerOpen}
+                onOpenChange={setHeaderOpen}
+              >
+                <Dragger {...props}>
+                  <div className="upload-drag-icon-container">
+                    {
+                      uploadFiles.length === 0 ? (
+                        <>
+                          <p className="upload-drag-icon">
+                            <InboxOutlined />
+                          </p>
+                          <p className="upload-text">点击或拖拽文件上传</p>
+                        </>
+                      ) : null
+                    }
+                  </div>
+                </Dragger>
+              </Sender.Header>
+              <div className="sender-header">
+                <Switch
+                  disabled={modal === "doubao"}
+                  checked={isNetwork}
+                  checkedChildren={"联网"}
+                  unCheckedChildren={"断网"}
+                  onChange={setIsNetwork}
+                />
+              </div>
+            </>
           }
           actions={(_, info) => {
             const { SendButton, LoadingButton } = info.components;

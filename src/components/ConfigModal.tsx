@@ -90,8 +90,9 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
         >
           <Form.Item label="模型" name="model">
             <Select>
-              <Select.Option value="deepseek">DeepSeek-R1</Select.Option>
-              <Select.Option value="doubao">Doubao-1-5-lite</Select.Option>
+              <Select.Option value="deepseek-r1">DeepSeek-R1</Select.Option>
+              <Select.Option value="doubao-1.5-lite-32k">Doubao-1.5-lite</Select.Option>
+              <Select.Option value="doubao-1.5-vision-pro-32k">Doubao-1.5-vision-pro</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="性格" name="prompt">

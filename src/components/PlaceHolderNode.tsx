@@ -15,11 +15,15 @@ export default function Welcome() {
           是否开启联网功能只有deepseek有，不开启联网数据只到2023年，但是接口返回会非常快，联网后需要等待服务器返回，大约3到4秒
         </p>
         <p>deepseek固定开启了推理功能，不想要推理把模型改成doubao</p>
+        <p>视觉分析功能目前只有doubao-1.5-vision-pro模型支持</p>
         <p style={{ textDecoration: "line-through" }}>
           function
           calling功能目前只有doubao可以用，倒霉的火山引擎的deepseek不支持流式响应的时候调用tool
         </p>
         <p>经测试发现可以用，那为啥文档里写不可用呢，奇奇怪怪</p>
+        <h2> v0.0.6 </h2>
+        <p>对接了doubao-1.5-vision-pro模型</p>
+        <p>增加视觉分析功能</p>
         <h2> v0.0.5 </h2>
         <p>增加移动端样式</p>
         <p>以及我在思考要不要增加一个视觉分析功能</p>
