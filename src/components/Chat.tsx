@@ -95,7 +95,7 @@ const Independent: React.FC = () => {
 
   const [isNetwork, setIsNetwork] = React.useState(false);
 
-  const [modal, setModal] = React.useState("deepseek");
+  const [modal, setModal] = React.useState("deepseek-r1");
 
   const menuRef = useRef<MenuRef>(null);
 
