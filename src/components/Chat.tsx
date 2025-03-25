@@ -188,8 +188,14 @@ const Independent: React.FC = () => {
     navigator.clipboard.writeText(message);
   };
 
-  const reloadMessage = (message: UIMessage) => {
-    reload(message);
+  const reloadMessage = () => {
+    reload({
+      body: {
+        network: isNetwork ? "1" : "0",
+        modal,
+        files: uploadFiles
+      }
+    });
   };
 
   // ==================== Nodes ====================
