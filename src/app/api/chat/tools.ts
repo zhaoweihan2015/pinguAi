@@ -95,7 +95,7 @@ const getDate = tool({
 });
 
 const getEmoji = tool({
-  description: "根据对话选择表情图",
+  description: "根据对话选择表情图，没有合适的就不添加表情",
   parameters: z.object({
     name: z.string().describe("表情名字, 已有的表情为" + getPublicFiles().join("，"))
   }),

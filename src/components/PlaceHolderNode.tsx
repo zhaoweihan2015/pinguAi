@@ -21,6 +21,8 @@ export default function Welcome() {
           calling功能目前只有doubao可以用，倒霉的火山引擎的deepseek不支持流式响应的时候调用tool
         </p>
         <p>经测试发现可以用，那为啥文档里写不可用呢，奇奇怪怪</p>
+        <h2> v0.0.7 </h2>
+        <p>增加表情包功能</p>
         <h2> v0.0.6 </h2>
         <p>对接了doubao-1.5-vision-pro模型</p>
         <p>增加视觉分析功能</p>

@@ -22,7 +22,6 @@ import {
 import { useChat } from "@ai-sdk/react";
 import ChatMarkDown from "./ChatMarkDown";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
-import { UIMessage } from "ai";
 import PlaceHolderNode from "./PlaceHolderNode";
 import ConfigModal from "./ConfigModal";
 import Menu, { MenuRef } from "./Menu";
