@@ -20,6 +20,10 @@ export async function POST(req: Request) {
       role: "system",
       content: db.data.memory.join(";") // 长期记忆
     },
+    {
+      role: "system",
+      content: "每句话都要使用getEmoji方法找到合适的表情回复"
+    },
     ...messages,
   ];
 

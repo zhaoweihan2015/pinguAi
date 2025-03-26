@@ -2,6 +2,8 @@ import { tool } from "ai";
 import { z } from "zod";
 import chalk from "chalk";
 import db from "@/db/db";
+import dayjs from "dayjs";
+import { getPublicFiles } from "@/lib/file-store"
 
 // 获取B站实时热搜榜单
 const getBilibiliHotSearch = tool({
@@ -39,7 +41,7 @@ const getMoYuTime = tool({
 });
 
 const setMemory = tool({
-  description: "把我说需要记忆，记住的内容，存储到数据库里",
+  description: "把我说需要记忆，记住的内容进行存储",
   parameters: z.object({
     memory: z.string().describe("记忆内容"),
   }),
@@ -76,11 +78,41 @@ const getMemory = tool({
   },
 });
 
+const getTime = tool({
+  description: "获取当前时间",
+  parameters: z.object({}),
+  execute: async () => {
+    return dayjs().format("YYYY-MM-DD HH:mm:ss");
+  },
+});
+
+const getDate = tool({
+  description: "获取当前日期",
+  parameters: z.object({}),
+  execute: async () => {
+    return dayjs().format("YYYY-MM-DD");
+  },
+});
+
+const getEmoji = tool({
+  description: "根据对话选择表情图",
+  parameters: z.object({
+    name: z.string().describe("表情名字, 已有的表情为" + getPublicFiles().join("，"))
+  }),
+  execute: async ({name}) => {
+    console.log(chalk.blue("使用了工具getEmoji：" + name), getPublicFiles());
+    return `<img src="/image/${name}" alt="${name}" width="100px" height="100px" />`
+  }
+})
+
 const tools = {
   getBilibiliHotSearch,
   getMoYuTime,
   setMemory,
   getMemory,
+  getTime,
+  getDate,
+  getEmoji
 };
 
 export default tools;
