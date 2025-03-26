@@ -267,7 +267,7 @@ const Independent: React.FC = () => {
                 variant="text"
                 size="small"
                 icon={<SyncOutlined />}
-                onClick={() => reloadMessage(message)}
+                onClick={() => reloadMessage()}
               />
               <Button
                 color="default"
