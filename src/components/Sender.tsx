@@ -1,13 +1,13 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
+import { ChatRequestOptions } from "ai";
+import Image from "next/image";
 import { Sender } from "@ant-design/x";
 import { Button, Space, Switch, Typography, UploadProps } from "antd";
-import Image from "next/image";
 import { ClearOutlined, InboxOutlined, LinkOutlined } from "@ant-design/icons";
 import Dragger from "antd/es/upload/Dragger";
 import { convertToBase64 } from "@/util";
 import { useGlobalState } from "@/lib/hooks/useGlobal";
 import { UploadFile } from "./Chat";
-import { ChatRequestOptions } from "ai";
 
 interface SenderProps {
   input: string;

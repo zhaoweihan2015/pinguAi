@@ -2,10 +2,10 @@
 
 import React, { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
-import PlaceHolderNode from "./PlaceHolderNode";
+import { useGlobalState } from "@/lib/hooks/useGlobal";
 import ConfigModal from "./ConfigModal";
 import Menu, { MenuRef } from "./Menu";
-import { useGlobalState } from "@/lib/hooks/useGlobal";
+import PlaceHolderNode from "./PlaceHolderNode";
 import SenderComponent, { SenderRef } from "./Sender";
 import BubbleComponent, { BubbleRef } from "./Bubble";
 

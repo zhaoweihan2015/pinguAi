@@ -1,5 +1,5 @@
-import { App, Form, Input, Modal, Select, Spin } from "antd";
 import { useEffect, useState } from "react";
+import { App, Form, Input, Modal, Select, Spin } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 interface ConfigModalProps {
@@ -9,7 +9,12 @@ interface ConfigModalProps {
   setModal: (modal: string) => void;
 }
 
-export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigModalProps) {
+export default function ConfigModal({
+  open,
+  onCancel,
+  modal,
+  setModal,
+}: ConfigModalProps) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { message } = App.useApp();
@@ -27,8 +32,8 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
         method: "POST",
         body: JSON.stringify({ memory: memory.split("\n") }),
       });
-      
-      console.log(memory,"??")
+
+      console.log(memory, "??");
 
       setModal(form.getFieldsValue().model);
 
@@ -91,8 +96,12 @@ export default function ConfigModal({ open, onCancel, modal, setModal }: ConfigM
           <Form.Item label="模型" name="model">
             <Select>
               <Select.Option value="deepseek-r1">DeepSeek-R1</Select.Option>
-              <Select.Option value="doubao-1.5-lite-32k">Doubao-1.5-lite</Select.Option>
-              <Select.Option value="doubao-1.5-vision-pro-32k">Doubao-1.5-vision-pro</Select.Option>
+              <Select.Option value="doubao-1.5-lite-32k">
+                Doubao-1.5-lite
+              </Select.Option>
+              <Select.Option value="doubao-1.5-vision-pro-32k">
+                Doubao-1.5-vision-pro
+              </Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="性格" name="prompt">

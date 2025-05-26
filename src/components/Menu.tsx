@@ -1,7 +1,3 @@
-import { Conversations, ConversationsProps } from "@ant-design/x";
-import { App, Button, Drawer, GetProp } from "antd";
-import { DeleteOutlined, PlusOutlined, SmileFilled, UnorderedListOutlined } from "@ant-design/icons";
-import { useGlobalState } from "@/lib/hooks/useGlobal";
 import {
   forwardRef,
   useCallback,
@@ -9,8 +5,17 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { ConversationType } from "@/db/db";
+import { App, Button, Drawer, GetProp } from "antd";
 import { Message, UIMessage } from "ai";
+import { useGlobalState } from "@/lib/hooks/useGlobal";
+import { ConversationType } from "@/db/db";
+import {
+  DeleteOutlined,
+  PlusOutlined,
+  SmileFilled,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
+import { Conversations, ConversationsProps } from "@ant-design/x";
 
 interface MenuProps {
   setOpen: (open: boolean) => void;
@@ -49,25 +54,30 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ children }) => {
     };
   }, []);
 
-  return (
-    useDrawer ? (
-      <>
-        <div className="menuBtnContainer">
-          <Button
-            type="primary"
-            className="menuBtn"
-            onClick={() => setDrawerOpen(true)}
-          >
-            <UnorderedListOutlined />
-          </Button>
-        </div>
-        <Drawer footer={null} width={400} placement="left" title={null} open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          { children }
-        </Drawer>
-      </>
-    ) : (
-      children
-    )
+  return useDrawer ? (
+    <>
+      <div className="menuBtnContainer">
+        <Button
+          type="primary"
+          className="menuBtn"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <UnorderedListOutlined />
+        </Button>
+      </div>
+      <Drawer
+        footer={null}
+        width={400}
+        placement="left"
+        title={null}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        {children}
+      </Drawer>
+    </>
+  ) : (
+    children
   );
 };
 
@@ -197,33 +207,33 @@ const Menu = forwardRef<MenuRef, MenuProps>(
 
     return (
       <MenuDrawer>
-      <div className="menu">
-        {/* 🌟 添加会话 */}
-        <Button
-          onClick={addConversation}
-          type="primary"
-          className="addBtn"
-          icon={<PlusOutlined />}
-        >
-          添加对话
-        </Button>
-        {/* 🌟 会话管理 */}
-        <Conversations
-          items={conversationsItems}
-          className="conversations"
-          activeKey={activeKey}
-          menu={menuConfig}
-          onActiveChange={onConversationClick}
-        />
-        <Button
-          type="primary"
-          shape="circle"
-          className="configBtn"
-          onClick={() => setOpen(true)}
-        >
-          <SmileFilled />
-        </Button>
-      </div>
+        <div className="menu">
+          {/* 🌟 添加会话 */}
+          <Button
+            onClick={addConversation}
+            type="primary"
+            className="addBtn"
+            icon={<PlusOutlined />}
+          >
+            添加对话
+          </Button>
+          {/* 🌟 会话管理 */}
+          <Conversations
+            items={conversationsItems}
+            className="conversations"
+            activeKey={activeKey}
+            menu={menuConfig}
+            onActiveChange={onConversationClick}
+          />
+          <Button
+            type="primary"
+            shape="circle"
+            className="configBtn"
+            onClick={() => setOpen(true)}
+          >
+            <SmileFilled />
+          </Button>
+        </div>
       </MenuDrawer>
     );
   }

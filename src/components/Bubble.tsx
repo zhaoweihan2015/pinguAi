@@ -1,8 +1,3 @@
-import Image from "next/image";
-import { Button, GetProp, Space } from "antd";
-import { Bubble } from "@ant-design/x";
-import PlaceHolderNode from "./PlaceHolderNode";
-import { CopyOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
 import {
   forwardRef,
   useImperativeHandle,
@@ -11,8 +6,13 @@ import {
   useState,
 } from "react";
 import { Message } from "ai";
-import ChatMarkDown from "./ChatMarkDown";
+import Image from "next/image";
+import { Button, GetProp, Space } from "antd";
+import { Bubble } from "@ant-design/x";
+import { CopyOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
 import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
+import PlaceHolderNode from "./PlaceHolderNode";
+import ChatMarkDown from "./ChatMarkDown";
 import { SenderRef } from "./Sender";
 
 interface BubbleProps {
