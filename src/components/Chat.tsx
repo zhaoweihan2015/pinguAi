@@ -1,18 +1,13 @@
 "use client";
 
-import { Bubble } from "@ant-design/x";
 import React, { useEffect, useMemo, useRef } from "react";
-import Image from "next/image";
-import { CopyOutlined, SyncOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, type GetProp, Space } from "antd";
 import { useChat } from "@ai-sdk/react";
-import ChatMarkDown from "./ChatMarkDown";
-import { BubbleDataType } from "@ant-design/x/es/bubble/BubbleList";
 import PlaceHolderNode from "./PlaceHolderNode";
 import ConfigModal from "./ConfigModal";
 import Menu, { MenuRef } from "./Menu";
 import { useGlobalState } from "@/lib/hooks/useGlobal";
 import SenderComponent, { SenderRef } from "./Sender";
+import BubbleComponent, { BubbleRef } from "./Bubble";
 
 export interface UploadFile {
   uid: string;
@@ -21,24 +16,12 @@ export interface UploadFile {
   mimeType: string;
 }
 
-const roles: GetProp<typeof Bubble.List, "roles"> = {
-  ai: {
-    placement: "start",
-    avatar: {
-      icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />,
-      style: { background: "#fde3cf" },
-    },
-    style: {
-      maxWidth: "90%",
-    },
-  },
-  user: {
-    placement: "end",
-    avatar: { icon: <UserOutlined />, style: { background: "#87d068" } },
-  },
-};
-
 const Independent: React.FC = () => {
+  // ==================== Nodes ====================
+  const chatRef = useRef<HTMLDivElement>(null);
+  const senderRef = useRef<SenderRef>(null);
+  const menuRef = useRef<MenuRef>(null);
+  const bubbleRef = useRef<BubbleRef>(null);
   // ==================== Runtime ====================
   const {
     messages,
@@ -53,24 +36,14 @@ const Independent: React.FC = () => {
     experimental_throttle: 100,
     onToolCall: ({ toolCall }) => {
       if (toolCall.toolName === "setMemory") {
-        if (timer.current) clearTimeout(timer.current);
-
-        setShowMemoryUpdate(true);
-
-        timer.current = setTimeout(() => {
-          setShowMemoryUpdate(false);
-        }, 5000);
+        bubbleRef.current?.showMemory();
       }
     },
   });
   // ==================== State ====================
-  const timer = useRef<NodeJS.Timeout | null>(null);
-
   const { activeKey } = useGlobalState();
 
   const [open, setOpen] = React.useState(false);
-
-  const senderRef = useRef<SenderRef>(null);
 
   const loading = useMemo(
     () => status === "submitted" || status === "streaming",
@@ -78,11 +51,6 @@ const Independent: React.FC = () => {
   );
 
   const [modal, setModal] = React.useState("deepseek-r1");
-
-  const menuRef = useRef<MenuRef>(null);
-
-  const [showMemoryUpdate, setShowMemoryUpdate] = React.useState(false);
-
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
@@ -98,10 +66,6 @@ const Independent: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(messages)]);
-
-  const copy = (message: string) => {
-    navigator.clipboard.writeText(message);
-  };
 
   // 向ai提交
   const onSubmit = (
@@ -135,88 +99,6 @@ const Independent: React.FC = () => {
     setMessages([]);
     setInput("");
   };
-
-  // ==================== Nodes ====================
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  const items: GetProp<typeof Bubble.List, "items"> = useMemo(() => {
-    return messages.map((message, index) => {
-      if (message.role === "user") {
-        return {
-          key: message.id,
-          role: "user",
-          content: message.content,
-          messageRender: (content) => {
-            return (
-              <>
-                <ChatMarkDown key={`usertext-${message.id}`}>
-                  {content}
-                </ChatMarkDown>
-              </>
-            );
-          },
-        };
-      } else if (message.role === "assistant") {
-        const set: BubbleDataType = {
-          key: message.id,
-          role: "ai",
-          content: message.content,
-          className: "bubble-response",
-          messageRender: (content?: string) => {
-            return (
-              <div>
-                {index === messages.length - 1 && (
-                  <div
-                    className={`memory-update ${
-                      showMemoryUpdate ? "show" : ""
-                    }`}
-                  >
-                    记忆已更新...
-                  </div>
-                )}
-                {message.reasoning && (
-                  <div className="reasoning">
-                    <ChatMarkDown key={`reasoning-${message.id}`}>
-                      {message.reasoning}
-                    </ChatMarkDown>
-                  </div>
-                )}
-                <ChatMarkDown key={`content-${message.id}`}>
-                  {content}
-                </ChatMarkDown>
-              </div>
-            );
-          },
-        };
-
-        if (index === messages.length - 1) {
-          set.footer = (
-            <Space>
-              <Button
-                color="default"
-                variant="text"
-                size="small"
-                icon={<SyncOutlined />}
-                onClick={() => senderRef.current?.reloadMessage()}
-              />
-              <Button
-                color="default"
-                variant="text"
-                size="small"
-                icon={<CopyOutlined />}
-                onClick={() => copy(message.content)}
-              />
-            </Space>
-          );
-        }
-        return set;
-      } else {
-        return {};
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(messages)]);
-
   // ==================== Render =================
   return (
     <div className="layout">
@@ -235,14 +117,10 @@ const Independent: React.FC = () => {
       <div className="chat" ref={chatRef}>
         {/* 🌟 消息列表 */}
         {messages.length > 0 ? (
-          <Bubble.List
-            items={
-              items.length > 0
-                ? items
-                : [{ content: <PlaceHolderNode />, variant: "borderless" }]
-            }
-            roles={roles}
-            className="messages"
+          <BubbleComponent
+            ref={bubbleRef}
+            messages={messages}
+            senderRef={senderRef}
           />
         ) : (
           <div className="messages">
