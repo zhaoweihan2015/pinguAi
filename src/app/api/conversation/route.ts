@@ -1,57 +1,64 @@
-
 import db, { ConversationType } from "@/db/db";
-import dayjs from "dayjs"
+import dayjs from "dayjs";
 
 export async function GET() {
-    const { conversation } = db.data;
-    
-    return new Response(JSON.stringify(conversation));
+  const { conversation } = db.data;
+
+  return new Response(JSON.stringify(conversation ?? {}));
 }
 
-export async function POST (req: Request) {
-    const { key, name, messages } = await req.json();
-    
-    
-    console.log("创建对话==================");
-    console.log(name);
-    
-    await db.read();
+export async function POST(req: Request) {
+  const { key, name, messages } = await req.json();
 
-    const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
+  console.log("创建对话==================");
+  console.log(name);
 
-    if(!(key in conversation)) {
-        conversation[key] = {
-            ...conversation[key],
-            key,
-        }
-    }
-    
+  await db.read();
+
+  const conversation: Record<string, ConversationType> =
+    db.data.conversation ?? {};
+
+  if (!(key in conversation)) {
     conversation[key] = {
-        ...conversation[key],
-        name,
-        messages,
-        updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-        createTime: key in conversation ? conversation[key].createTime : dayjs().format("YYYY-MM-DD HH:mm:ss")
-    }
+      ...conversation[key],
+      key,
+    };
+  }
 
-    await db.write();
+  conversation[key] = {
+    ...conversation[key],
+    name,
+    messages,
+    updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    createTime:
+      key in conversation
+        ? conversation[key].createTime
+        : dayjs().format("YYYY-MM-DD HH:mm:ss"),
+  };
 
-    return new Response(JSON.stringify({
-        message: "success",
-        conversation
-    }));
+  await db.write();
+
+  return new Response(
+    JSON.stringify({
+      message: "success",
+      conversation,
+    })
+  );
 }
 
 export async function DELETE(req: Request) {
-    const { key } = await req.json();
+  const { key } = await req.json();
 
-    const conversation: Record<string, ConversationType> = db.data.conversation ?? {};
-    
-    delete conversation[key];
+  const conversation: Record<string, ConversationType> =
+    db.data.conversation ?? {};
 
-    db.write();
+  delete conversation[key];
 
-    return new Response(JSON.stringify({
-        message: "success"
-    }));
-}   
+  db.write();
+
+  return new Response(
+    JSON.stringify({
+      message: "success",
+    })
+  );
+}

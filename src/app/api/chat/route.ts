@@ -18,11 +18,11 @@ export async function POST(req: Request) {
     },
     {
       role: "system",
-      content: db.data.memory.join(";") // 长期记忆
+      content: db.data.memory.join(";"), // 长期记忆
     },
     {
       role: "system",
-      content: "每句话都要使用getEmoji方法找到合适的表情回复"
+      content: "每句话在合适的时候使用getEmoji方法找到合适的表情回复",
     },
     ...messages,
   ];
@@ -31,12 +31,12 @@ export async function POST(req: Request) {
   let model = "deepseek-r1-250120";
 
   // 选择模型
-  switch(modal){
+  switch (modal) {
     case "doubao-1.5-lite-32k":
-      model = "doubao-1-5-lite-32k-250115"
+      model = "doubao-1-5-lite-32k-250115";
       break;
     case "doubao-1.5-vision-pro-32k":
-      model = "doubao-1-5-vision-pro-32k-250115"
+      model = "doubao-1-5-vision-pro-32k-250115";
 
       // 添加图片
       const lastMessage = _meessages[_meessages.length - 1];
@@ -46,18 +46,18 @@ export async function POST(req: Request) {
           type: "text",
           text: lastMessage.content,
         },
-        ...files.map((file: { base64: string; type: string; }) => ({
+        ...files.map((file: { base64: string; type: string }) => ({
           type: "image",
           image: file.base64,
           mimeType: file.type,
         })),
-      ];  
+      ];
       break;
     default: // deepseek
       const isNetwork = network === "1";
 
       // deepseek联网需要更换url和modal
-      if(isNetwork){
+      if (isNetwork) {
         baseURL = process.env.DEEPSEEK_BOT_API_URL ?? "";
         model = process.env.DEEPSEEK_BOT_API_KEY ?? "";
       }
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   }
 
   console.log(messages[messages.length - 1], network);
-  
+
   console.log(chalk.greenBright("使用的模型：", model));
 
   return createDataStreamResponse({
