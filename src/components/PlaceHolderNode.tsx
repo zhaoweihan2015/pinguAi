@@ -23,8 +23,16 @@ export default function Welcome() {
         <p>经测试发现可以用，那为啥文档里写不可用呢，奇奇怪怪</p>
         <h2> v0.0.8 </h2>
         <p>增加自动填充标题功能</p>
+        <div className="tip">
+          <p>增加可用工具：</p>
+          <p>getTitle：获取标题</p>
+        </div>
         <h2> v0.0.7 </h2>
         <p>增加表情包功能</p>
+        <div className="tip">
+          <p>增加可用工具：</p>
+          <p>getEmoji：获取表情包</p>
+        </div>
         <h2> v0.0.6 </h2>
         <p>对接了doubao-1.5-vision-pro模型</p>
         <p>增加视觉分析功能</p>
