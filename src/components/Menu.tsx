@@ -34,6 +34,7 @@ export interface MenuRef {
     messages: UIMessage[],
     create?: boolean
   ) => Promise<void>;
+  changedTitle: (title: string) => void;
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ children }) => {
@@ -96,47 +97,44 @@ const Menu = forwardRef<MenuRef, MenuProps>(
 
     useImperativeHandle(ref, () => ({
       handleConversation,
+      changedTitle,
     }));
+
+    const changedTitle = async (title: string) => {
+      try {
+        await fetch("/api/conversation/title", {
+          method: "POST",
+          body: JSON.stringify({ title, id: activeKey }),
+        });
+
+        getConversation();
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     const handleConversation = useCallback(
       async (messages: UIMessage[] = [], create = false) => {
         const id = create ? new Date().getTime().toString() : activeKey;
-
-        const name = messages[0]?.content.slice(0, 10) ?? "新的对话";
 
         try {
           await fetch("/api/conversation", {
             method: "POST",
             body: JSON.stringify({
               key: id,
-              name,
               messages: JSON.stringify(messages),
             }),
           });
 
-          const _conversationsItems = [...conversationsItems];
-
-          const nowItem = _conversationsItems.find((item) => item.key === id);
-
-          if (create) {
-            _conversationsItems.push({
-              key: id,
-              label: name,
-              messages: JSON.stringify(messages),
-            });
-          } else if (nowItem) {
-            nowItem.messages = JSON.stringify(messages);
-            nowItem.label = name;
-          }
-
-          setConversationsItems(_conversationsItems);
+          getConversation();
 
           updateActiveKey(id);
         } catch (error) {
           console.error(error);
         }
       },
-      [conversationsItems, activeKey, updateActiveKey]
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [activeKey]
     );
 
     const getConversation = async () => {
@@ -145,7 +143,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
       setConversationsItems(
         Object.values(data).map((item: ConversationType) => ({
           key: item.key,
-          label: item.name,
+          label: item.name ?? "新的对话",
           messages: item.messages,
         }))
       );

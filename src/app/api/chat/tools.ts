@@ -3,7 +3,7 @@ import { z } from "zod";
 import chalk from "chalk";
 import db from "@/db/db";
 import dayjs from "dayjs";
-import { getPublicFiles } from "@/lib/file-store"
+import { getPublicFiles } from "@/lib/file-store";
 
 // 获取B站实时热搜榜单
 const getBilibiliHotSearch = tool({
@@ -52,7 +52,7 @@ const setMemory = tool({
 
     const { memory: oldMemory } = db.data;
 
-    if(oldMemory.includes(memory)) {
+    if (oldMemory.includes(memory)) {
       return `记忆已存在,不用再记忆`;
     }
 
@@ -61,7 +61,7 @@ const setMemory = tool({
     db.data.memory = newMemory;
 
     await db.write();
-    
+
     return `记忆已更新：${memory}`;
   },
 });
@@ -95,15 +95,28 @@ const getDate = tool({
 });
 
 const getEmoji = tool({
-  description: "根据对话选择表情图，没有合适的就不添加表情",
+  description: "根据对话看情况确定是否选择表情图，没有合适的就不添加表情",
   parameters: z.object({
-    name: z.string().describe("表情名字, 已有的表情为" + getPublicFiles().join("，"))
+    name: z
+      .string()
+      .describe("表情名字, 已有的表情为" + getPublicFiles().join("，")),
   }),
-  execute: async ({name}) => {
+  execute: async ({ name }) => {
     console.log(chalk.blue("使用了工具getEmoji：" + name), getPublicFiles());
-    return `<img src="/image/${name}" alt="${name}" width="100px" height="100px" />`
-  }
-})
+    return `<img src="/image/${name}" alt="${name}" width="100px" height="100px" />`;
+  },
+});
+
+const getTitle = tool({
+  description: "每次对话的第一条，获取标题，标题尽量控制在几个字以内",
+  parameters: z.object({
+    title: z.string().describe("标题"),
+  }),
+  execute: async ({ title }) => {
+    console.log(chalk.blue("对话的标题：" + title));
+    return title;
+  },
+});
 
 const tools = {
   getBilibiliHotSearch,
@@ -112,7 +125,8 @@ const tools = {
   getMemory,
   getTime,
   getDate,
-  getEmoji
+  getEmoji,
+  getTitle,
 };
 
 export default tools;

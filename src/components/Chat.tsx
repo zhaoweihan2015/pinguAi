@@ -38,6 +38,11 @@ const Independent: React.FC = () => {
       if (toolCall.toolName === "setMemory") {
         bubbleRef.current?.showMemory();
       }
+
+      if (toolCall.toolName === "getTitle") {
+        console.log("getTitle", toolCall);
+        menuRef.current?.changedTitle((toolCall?.args as any)?.title);
+      }
     },
   });
   // ==================== State ====================
@@ -52,13 +57,6 @@ const Independent: React.FC = () => {
 
   const [modal, setModal] = React.useState("deepseek-r1");
   // ==================== Event ====================
-  useEffect(() => {
-    if (status === "ready" && messages.length > 0) {
-      menuRef.current?.handleConversation(messages, !activeKey);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
-
   useEffect(() => {
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
@@ -90,6 +88,8 @@ const Independent: React.FC = () => {
     );
     // 清空输入框
     setInput("");
+    // 更新菜单
+    menuRef.current?.handleConversation(messages, !activeKey);
   };
 
   // 清空对话

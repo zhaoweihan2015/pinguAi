@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     },
     {
       role: "system",
-      content: "每句话在合适的时候使用getEmoji方法找到合适的表情回复",
+      content: "调用getTitle方法获取标题,但是禁止多次调用",
     },
     ...messages,
   ];
