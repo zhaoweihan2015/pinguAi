@@ -58,6 +58,13 @@ const Independent: React.FC = () => {
   const [modal, setModal] = React.useState("deepseek-r1");
   // ==================== Event ====================
   useEffect(() => {
+    if (status === "ready" && messages.length > 0) {
+      menuRef.current?.handleConversation(messages, !activeKey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
+
+  useEffect(() => {
     if (chatRef.current) {
       const div = chatRef.current.querySelector(".ant-bubble-list");
       div?.scrollTo(0, 9999999);
