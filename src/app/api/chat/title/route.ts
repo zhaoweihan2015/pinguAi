@@ -1,7 +1,7 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { generateText } from "ai";
 import chalk from "chalk";
-export const maxDuration = process.env.MAX_DURATION ?? 30;
+export const maxDuration = 30;
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);

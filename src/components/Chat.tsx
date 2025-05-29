@@ -54,7 +54,7 @@ const Independent: React.FC = () => {
   // ==================== Event ====================
   useEffect(() => {
     if (status === "ready" && messages.length > 0) {
-      menuRef.current?.handleConversation(messages, !activeKey);
+      menuRef.current?.handleConversation(messages);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);

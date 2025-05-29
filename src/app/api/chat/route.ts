@@ -4,8 +4,6 @@ import db from "@/db/db";
 import tools from "./tools";
 import chalk from "chalk";
 
-export const maxDuration = process.env.MAX_DURATION ?? 30;
-
 export async function POST(req: Request) {
   const { messages, system, network, modal, files } = await req.json();
 
