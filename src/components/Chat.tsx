@@ -41,7 +41,9 @@ const Independent: React.FC = () => {
 
       if (toolCall.toolName === "getTitle") {
         console.log("getTitle", toolCall);
-        menuRef.current?.changedTitle((toolCall?.args as any)?.title);
+        menuRef.current?.changedTitle(
+          (toolCall?.args as { title: string })?.title
+        );
       }
     },
   });
