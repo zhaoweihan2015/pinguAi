@@ -21,6 +21,11 @@ export default function Welcome() {
           calling功能目前只有doubao可以用，倒霉的火山引擎的deepseek不支持流式响应的时候调用tool
         </p>
         <p>经测试发现可以用，那为啥文档里写不可用呢，奇奇怪怪</p>
+        <h2> v0.0.8.1 </h2>
+        <p>
+          修复了标题获取错误的问题,不用 fuction calling
+          了,不稳定。还是直接由模型生成吧
+        </p>
         <h2> v0.0.8 </h2>
         <p>增加自动填充标题功能</p>
         <div className="tip">
