@@ -1,4 +1,4 @@
-import { tool } from "ai";
+import { Tool, tool } from "ai";
 import { z } from "zod";
 import chalk from "chalk";
 import db from "@/db/db";
@@ -107,8 +107,8 @@ const getEmoji = tool({
   },
 });
 
-const getTitle = tool({
-  description: "每次对话的第一条，获取标题，标题尽量控制在几个字以内",
+export const getTitle = tool({
+  description: "根据对话获取标题，标题尽量控制在几个字以内",
   parameters: z.object({
     title: z.string().describe("标题"),
   }),
@@ -118,7 +118,7 @@ const getTitle = tool({
   },
 });
 
-const tools = {
+const tools: Record<string, Tool> = {
   getBilibiliHotSearch,
   getMoYuTime,
   setMemory,
@@ -126,7 +126,6 @@ const tools = {
   getTime,
   getDate,
   getEmoji,
-  getTitle,
 };
 
 export default tools;

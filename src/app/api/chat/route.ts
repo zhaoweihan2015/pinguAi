@@ -1,11 +1,10 @@
-// import { deepseek } from "@ai-sdk/deepseek";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { streamText, createDataStreamResponse } from "ai";
 import db from "@/db/db";
 import tools from "./tools";
 import chalk from "chalk";
 
-export const maxDuration = 30;
+export const maxDuration = process.env.MAX_DURATION ?? 30;
 
 export async function POST(req: Request) {
   const { messages, system, network, modal, files } = await req.json();
@@ -19,10 +18,6 @@ export async function POST(req: Request) {
     {
       role: "system",
       content: db.data.memory.join(";"), // 长期记忆
-    },
-    {
-      role: "system",
-      content: "调用getTitle方法获取标题,但是禁止多次调用",
     },
     ...messages,
   ];
@@ -64,7 +59,7 @@ export async function POST(req: Request) {
       break;
   }
 
-  console.log(messages[messages.length - 1], network);
+  console.log(messages[messages.length - 1], messages.length, network);
 
   console.log(chalk.greenBright("使用的模型：", model));
 
@@ -79,7 +74,7 @@ export async function POST(req: Request) {
         messages: _meessages,
         system: system ?? "",
         tools,
-        maxSteps: 5,
+        maxSteps: 2,
         toolChoice: "auto",
       });
 

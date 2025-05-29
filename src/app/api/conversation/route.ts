@@ -27,6 +27,7 @@ export async function POST(req: Request) {
 
   conversation[key] = {
     ...conversation[key],
+    name: conversation[key].name ?? name,
     messages,
     updateTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
     createTime:

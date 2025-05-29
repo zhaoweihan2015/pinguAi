@@ -17,6 +17,8 @@ import {
 } from "@ant-design/icons";
 import { Conversations, ConversationsProps } from "@ant-design/x";
 
+type CreateType = "yes" | "no" | "no-message";
+
 interface MenuProps {
   setOpen: (open: boolean) => void;
   setMessages: (
@@ -32,7 +34,8 @@ interface MenuDrawerProps {
 export interface MenuRef {
   handleConversation: (
     messages: UIMessage[],
-    create?: boolean
+    create?: CreateType,
+    titleContent?: string
   ) => Promise<void>;
   changedTitle: (title: string) => void;
 }
@@ -114,19 +117,36 @@ const Menu = forwardRef<MenuRef, MenuProps>(
     };
 
     const handleConversation = useCallback(
-      async (messages: UIMessage[] = [], create = false) => {
-        const id = create ? new Date().getTime().toString() : activeKey;
+      async (
+        messages: UIMessage[] = [],
+        created: CreateType = "yes",
+        titleContent: string = ""
+      ) => {
+        const id =
+          created === "no" ? new Date().getTime().toString() : activeKey;
 
         try {
+          const params: Record<string, string> = {
+            key: id,
+            messages: JSON.stringify(messages),
+          };
+
+          // 如果还没有标题，则生成标题
+          if (created !== "yes" && titleContent) {
+            const res = await fetch(`/api/chat/title?content=${titleContent}`);
+
+            const { data: newName } = await res.json();
+
+            params.name = newName;
+          }
+
+          // 保存会话
           await fetch("/api/conversation", {
             method: "POST",
-            body: JSON.stringify({
-              key: id,
-              messages: JSON.stringify(messages),
-            }),
+            body: JSON.stringify(params),
           });
 
-          getConversation();
+          await getConversation();
 
           updateActiveKey(id);
         } catch (error) {
@@ -200,7 +220,7 @@ const Menu = forwardRef<MenuRef, MenuProps>(
     const addConversation = () => {
       setMessages([]);
 
-      handleConversation([], true);
+      handleConversation([], "no");
     };
 
     return (

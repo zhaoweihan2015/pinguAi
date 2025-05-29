@@ -38,13 +38,6 @@ const Independent: React.FC = () => {
       if (toolCall.toolName === "setMemory") {
         bubbleRef.current?.showMemory();
       }
-
-      if (toolCall.toolName === "getTitle") {
-        console.log("getTitle", toolCall);
-        menuRef.current?.changedTitle(
-          (toolCall?.args as { title: string })?.title
-        );
-      }
     },
   });
   // ==================== State ====================
@@ -97,8 +90,14 @@ const Independent: React.FC = () => {
     );
     // 清空输入框
     setInput("");
-    // 更新菜单
-    menuRef.current?.handleConversation(messages, !activeKey);
+
+    // 没有选中创建空白对话
+    if (messages.length === 0)
+      menuRef.current?.handleConversation(
+        messages,
+        activeKey ? "no-message" : "no",
+        nextContent
+      );
   };
 
   // 清空对话
