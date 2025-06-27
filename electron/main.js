@@ -6,9 +6,6 @@ const isDev = !app.isPackaged;
 const port = 3000;
 
 async function createWindow() {
-  console.log(isDev)
-  console.log("--------------------------------")
-
   if (!isDev) await fork(path.join(app.getAppPath(), 'server.js'));
 
   const win = new BrowserWindow({
