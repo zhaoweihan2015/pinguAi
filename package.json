@@ -1,12 +1,20 @@
 {
-  "name": "antdx-demo",
-  "version": "0.0.8.1",
+  "name": "pingu-ai",
+  "author": "Gua",
+  "description": "pingu-ai",
+  "version": "0.0.9",
   "private": true,
+  "main": "electron/main.js",
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:next": "next dev",
+    "dev:electron": "cross-env NODE_ENV=development electron .",
+    "dev": "concurrently -k \"yarn dev:next\" \"wait-on http://localhost:3000 && yarn dev:electron\"",
+    "clean": "rimraf dist",
+    "build:next": "next build",
+    "build:electron": "yarn clean && electron-builder",
+    "build": "yarn build:next && yarn build:electron"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^0.1.15",
@@ -19,6 +27,8 @@
     "antd-style": "^3.7.1",
     "chalk": "^5.4.1",
     "dayjs": "^1.11.13",
+    "electron-is-dev": "^3.0.1",
+    "express": "^5.1.0",
     "lowdb": "^7.0.1",
     "markdown-it": "13.0.2",
     "markdown-it-highlightjs": "^4.2.0",
@@ -38,9 +48,39 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^37.1.0",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.25.5",
+    "esbuild-register": "^3.6.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.8.3",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "asar": false,
+    "files": [
+      ".next/**/*",
+      "electron/**/*",
+      "public/**/*",
+      "package.json",
+      "server.js"
+    ]
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "public/pingu.png",
+    "uninstallerIcon": "public/pingu.png",
+    "installerHeaderIcon": "public/pingu.png",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
   }
 }
