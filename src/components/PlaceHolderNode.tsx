@@ -21,6 +21,8 @@ export default function Welcome() {
           calling功能目前只有doubao可以用，倒霉的火山引擎的deepseek不支持流式响应的时候调用tool
         </p>
         <p>经测试发现可以用，那为啥文档里写不可用呢，奇奇怪怪</p>
+        <h2> v0.1.1 </h2>
+        <p>优化了包过大的问题，之前莫名其妙的打包导致整个node_modules被打进了文件里，安装后整个文件2G多。优化后安装完只有220mb，这下正常了</p>
         <h2> v0.1.0 </h2>
         <p>终于用Electron裹好了，现在打包安装好后，可以双击开启项目的时候，在Electron内跑next服务，用起来更方便了</p>
         <h2> v0.0.8.1 </h2>
