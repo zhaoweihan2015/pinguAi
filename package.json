@@ -72,7 +72,6 @@
         "from": ".next/standalone",
         "to": "standalone",
         "filter": [
-          "**/*",
           "!node_modules/**"
         ]
       },
@@ -91,6 +90,10 @@
       {
         "from": ".env.local",
         "to": "app/standalone/.env.local"
+      },
+      {
+        "from": "public",
+        "to": "app/standalone/public"
       }
     ],
     "win": {

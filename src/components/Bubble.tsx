@@ -34,7 +34,7 @@ const BubbleComponent = forwardRef<BubbleRef, BubbleProps>(
       ai: {
         placement: "start",
         avatar: {
-          icon: <Image src="/pingu.png" alt="pingu" width={32} height={32} />,
+          icon: <Image src="/avatar/pingu.png" alt="pingu" width={32} height={32} />,
           style: { background: "#fde3cf" },
         },
         style: {

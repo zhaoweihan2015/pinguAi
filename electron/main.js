@@ -9,6 +9,10 @@ const port = 3000;
 
 let serverProcess = null;
 
+if(!isDev){
+
+}
+
 async function createWindow() {
   const win = new BrowserWindow({
     width: 1024,
@@ -59,9 +63,11 @@ async function createWindow() {
   if (isDev) {
     win.webContents.openDevTools();
   } else {
-    setTimeout(() => {
-      win.loadURL(`http://localhost:${port}`);
-    }, 3000);
+    serverProcess.on('message', (msg) => {
+      if (msg === 'ready') {
+        win.loadURL(`http://localhost:${port}`);
+      }
+    });
   }
 }
 

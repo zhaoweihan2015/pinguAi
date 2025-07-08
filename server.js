@@ -17,5 +17,7 @@ app.prepare().then(() => {
     })
     .listen(port, '127.0.0.1', () => {
       console.log(`> Next.js server ready at http://localhost:${port}`);
+
+      process.send?.('ready'); 
     });
 });
