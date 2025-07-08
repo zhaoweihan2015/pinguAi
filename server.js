@@ -2,7 +2,7 @@ const http  = require('http');
 const { parse } = require('url');
 const next  = require('next');
 
-const port = process.env.PORT || 3000;    
+const port = 3000;    
 const dev  = false;                       
 
 

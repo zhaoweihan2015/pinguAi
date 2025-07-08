@@ -11,9 +11,10 @@
     "dev:next": "next dev",
     "dev:electron": "cross-env NODE_ENV=development electron .",
     "dev": "concurrently -k \"yarn dev:next\" \"wait-on http://localhost:3000 && yarn dev:electron\"",
-    "clean": "rimraf dist",
-    "build:next": "next build",
-    "build:electron": "yarn clean && electron-builder",
+    "clean:next": "rimraf .next",
+    "clean:electron": "rimraf dist",
+    "build:next": "yarn clean:next && next build",
+    "build:electron": "yarn clean:electron && electron-builder",
     "build": "yarn build:next && yarn build:electron"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@ai-sdk/react": "^1.1.23",
     "@ant-design/nextjs-registry": "^1.0.2",
     "@ant-design/x": "^1.0.5",
+    "@next/bundle-analyzer": "^15.3.5",
     "ai": "^4.1.62",
     "antd": "^5.24.3",
     "antd-style": "^3.7.1",
@@ -63,24 +65,48 @@
   },
   "build": {
     "asar": false,
+    "npmRebuild": false,
     "files": [
-      ".next/**/*",
       "electron/**/*",
-      "public/**/*",
-      "package.json",
-      "server.js"
-    ]
-  },
-  "win": {
-    "target": "nsis"
-  },
-  "nsis": {
-    "oneClick": false,
-    "allowToChangeInstallationDirectory": true,
-    "installerIcon": "public/pingu.png",
-    "uninstallerIcon": "public/pingu.png",
-    "installerHeaderIcon": "public/pingu.png",
-    "createDesktopShortcut": true,
-    "createStartMenuShortcut": true
+      {
+        "from": ".next/standalone",
+        "to": "standalone",
+        "filter": [
+          "**/*",
+          "!node_modules/**"
+        ]
+      },
+      {
+        "from": ".next/static",
+        "to": "standalone/.next/static"
+      },
+      "!node_modules",
+      "!node_modules/*"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone/node_modules",
+        "to": "app/standalone/node_modules"
+      },
+      {
+        "from": ".env.local",
+        "to": "app/standalone/.env.local"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "public/pingu.ico",
+      "uninstallerIcon": "public/pingu.ico",
+      "installerHeaderIcon": "public/pingu.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
   }
 }

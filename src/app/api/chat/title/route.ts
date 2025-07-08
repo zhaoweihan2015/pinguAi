@@ -8,6 +8,7 @@ export async function GET(req: Request) {
   const content = searchParams.get("content") ?? "";
 
   console.log(chalk.redBright("开始生成标题"));
+  console.log(process.env.DEEPSEEK_API_URL);
 
   const { text } = await generateText({
     model: createOpenAICompatible({
